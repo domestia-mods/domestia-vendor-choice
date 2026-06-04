@@ -3,9 +3,12 @@
   "block.domestia_vendor_choice.vendor_safe": "Vendor Safe",
 
   "screen.domestia_vendor_choice.vendor_machine_control": "Vendor Machine Control",
-  "screen.domestia_vendor_choice.vendor_machine_sales": "Vendor Machine Sales",
-  "screen.domestia_vendor_choice.vendor_safe": "Vendor Safe",
+  "screen.domestia_vendor_choice.vendor_machine_control.stock": "Stock",
+  "screen.domestia_vendor_choice.vendor_machine_control.price": "Price",
+  "screen.domestia_vendor_choice.vendor_machine_control.vault": "Vault",
+  "screen.domestia_vendor_choice.vendor_machine_control.inventory": "Inventory",
 
+  "screen.domestia_vendor_choice.vendor_machine_sales": "Vendor Machine Sales",
   "screen.domestia_vendor_choice.vendor_machine_sales.price": "Price",
   "screen.domestia_vendor_choice.vendor_machine_sales.stock": "Stock",
   "screen.domestia_vendor_choice.vendor_machine_sales.deal": "Deal",
@@ -21,6 +24,8 @@
   "screen.domestia_vendor_choice.vendor_machine_sales.message.checkout_unavailable": "Unavailable",
   "screen.domestia_vendor_choice.vendor_machine_sales.message.no_stock": "No stock",
   "screen.domestia_vendor_choice.vendor_machine_sales.message.thank_you": "Thank you!",
+
+  "screen.domestia_vendor_choice.vendor_safe": "Vendor Safe",
 
   "message.domestia_vendor_choice.access_denied": "Access denied",
 
