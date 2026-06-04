@@ -3,16 +3,17 @@
   "id": "domestia_vendor_choice",
   "version": "${version}",
   "name": "Domestia Vendor Choice",
-  "description": "Secure vendor machine and private storage blocks for Domestia.",
+  "description": "Owner-protected vendor machines and private vendor safes for Minecraft Fabric.",
   "authors": [
     "JimFixer"
   ],
   "contact": {
-    "homepage": "https://ko-fi.com/Z5X220SWVK",
-    "issues": "https://ko-fi.com/Z5X220SWVK",
-    "sources": "https://ko-fi.com/Z5X220SWVK"
+    "homepage": "https://github.com/domestia-mods/domestia-vendor-choice",
+    "sources": "https://github.com/domestia-mods/domestia-vendor-choice",
+    "issues": "https://github.com/domestia-mods/domestia-vendor-choice/issues",
+    "donate": "https://ko-fi.com/Z5X220SWVK"
   },
-  "license": "CC0-1.0",
+  "license": "MIT",
   "icon": "assets/domestia_vendor_choice/icon.png",
   "environment": "*",
   "entrypoints": {

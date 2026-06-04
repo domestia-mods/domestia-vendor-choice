@@ -25,6 +25,6 @@
   "message.domestia_vendor_choice.access_denied": "Access denied",
 
   "modmenu.nameTranslation.domestia_vendor_choice": "Domestia Vendor Choice",
-  "modmenu.summaryTranslation.domestia_vendor_choice": "Secure vending and private storage for Domestia.",
-  "modmenu.descriptionTranslation.domestia_vendor_choice": "Domestia Vendor Choice adds owner-protected vendor machines and vendor safes for multiplayer survival worlds. Vendor Machines support configurable stock, prices, protected vault storage, front item display, sales UI feedback, and owner-only control access. Vendor Safes provide private barrel-style storage with owner-only access and administrative recovery rules. If this mod made your server a little better, buy me a coffee: https://ko-fi.com/Z5X220SWVK"
+  "modmenu.summaryTranslation.domestia_vendor_choice": "Owner-protected vending and private storage.",
+  "modmenu.descriptionTranslation.domestia_vendor_choice": "Domestia Vendor Choice adds owner-protected vendor machines and vendor safes for multiplayer survival worlds. Vendor Machines support configurable stock, prices, protected vault storage, front item display, sales UI feedback, vanilla sound effects, and owner-only control access. Vendor Safes provide private barrel-style storage with owner-only access and administrative recovery rules. Source code and issue tracking are available on GitHub: https://github.com/domestia-mods/domestia-vendor-choice. If this mod made your server a little better, buy me a coffee: https://ko-fi.com/Z5X220SWVK"
 }
