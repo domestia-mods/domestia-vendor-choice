@@ -1,0 +1,49 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# Java / IDE output
+bin/
+
+# Minecraft runtime/test folders
+run/
+logs/
+crash-reports/
+saves/
+screenshots/
+resourcepacks/
+shaderpacks/
+options.txt
+optionsof.txt
+servers.dat
+usercache.json
+usernamecache.json
+
+# Java artifacts
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+hs_err_pid*
+replay_pid*
+
+# IDE/editor
+.idea/
+*.iml
+.vscode/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~

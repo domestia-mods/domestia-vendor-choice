@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "ICI",
+    "BBB"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "C": "minecraft:barrel",
+    "B": "minecraft:iron_block"
+  },
+  "result": {
+    "id": "domestia_vendor_choice:vendor_safe",
+    "count": 1
+  }
+}

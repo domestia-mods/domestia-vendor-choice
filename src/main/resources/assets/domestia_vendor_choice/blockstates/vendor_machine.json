@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "domestia_vendor_choice:block/vendor_machine"
+    },
+    "facing=east": {
+      "model": "domestia_vendor_choice:block/vendor_machine",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "domestia_vendor_choice:block/vendor_machine",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "domestia_vendor_choice:block/vendor_machine",
+      "y": 270
+    }
+  }
+}

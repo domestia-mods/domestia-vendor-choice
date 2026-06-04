@@ -1,0 +1,44 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "front": "domestia_vendor_choice:block/vendor_safe_front",
+    "back": "domestia_vendor_choice:block/vendor_safe_back",
+    "left": "domestia_vendor_choice:block/vendor_safe_left",
+    "right": "domestia_vendor_choice:block/vendor_safe_right",
+    "top": "domestia_vendor_choice:block/vendor_safe_top",
+    "bottom": "domestia_vendor_choice:block/vendor_safe_bottom",
+    "particle": "domestia_vendor_choice:block/vendor_safe_left"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#back",
+          "cullface": "south"
+        },
+        "east": {
+          "texture": "#right",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#left",
+          "cullface": "west"
+        },
+        "up": {
+          "texture": "#top",
+          "cullface": "up"
+        },
+        "down": {
+          "texture": "#bottom",
+          "cullface": "down"
+        }
+      }
+    }
+  ]
+}
