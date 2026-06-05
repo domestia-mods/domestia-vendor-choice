@@ -12,7 +12,7 @@
 - Vendor Machine now emits a short redstone transaction pulse after a successful purchase.
 - Transaction pulse is emitted from the utility faces of the Vendor Machine: top, bottom, left, and right relative to the machine facing.
 - Front and back faces do not emit transaction pulse signals because they are reserved for the sales and control interfaces.
-- Transaction pulse can activate adjacent redstone components and command blocks, including a command block placed directly under the Vendor Machine.
+- Transaction pulse can activate adjacent redstone components and command blocks, including a command block placed directly under the Vendor Machine. 
 
 ### Fixed
 
