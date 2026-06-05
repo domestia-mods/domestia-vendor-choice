@@ -12,6 +12,10 @@
   </a>
 </p>
 
+![Status](https://img.shields.io/badge/status-beta-yellowgreen)
+![Minecraft](https://img.shields.io/badge/Minecraft-1.21.x-brightgreen)
+![Fabric](https://img.shields.io/badge/Loader-Fabric-blue)
+
 ## New In-Game Blocks
 
 ### Vendor Machine
