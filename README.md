@@ -6,7 +6,7 @@
 
 <img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" align="center" width="100%">
 <h1 align="center">Domestia Vendor Choice</h1>
-Owner-protected trading tools.
+<h3 align="center">Owner-protected trading tools.</h3>
 
 
 ## New In-Game Blocks
