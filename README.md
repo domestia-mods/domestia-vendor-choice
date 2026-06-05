@@ -1,13 +1,10 @@
-<p align="right">
-  <a href="https://ko-fi.com/Z5X220SWVK">
-    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi">
-  </a>
-</p>
-
 <h1 align="center">Domestia Vendor Choice</h1>
 <h3 align="center">
   <img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" width="100%"><br>
-  Owner-protected trading tools.
+  Owner-protected trading tools.<br>
+  <a href="https://ko-fi.com/Z5X220SWVK">
+    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi">
+  </a>
 </h3>
 
 
