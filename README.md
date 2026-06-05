@@ -4,10 +4,9 @@
   </a>
 </p>
 
-<p align="center">
+<h1 align="center">Domestia Vendor Choice<br>
   <img src="assets/github-header.png" alt="Domestia Vendor Choice" width="100%">
-</p>
-<h1 align="center">Domestia Vendor Choice</h1>
+</h1>
 <h3 align="center">Owner-protected trading tools.</h3>
 
 
