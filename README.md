@@ -2,11 +2,12 @@
 <h3 align="center">
   <img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" width="100%"><br>
   Owner-protected trading tools.<br>
+</h3>
+<p align="center">
   <a href="https://ko-fi.com/Z5X220SWVK">
     <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi">
   </a>
-</h3>
-
+</p>
 
 ## New In-Game Blocks
 
