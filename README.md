@@ -1,11 +1,11 @@
-<p align="center">
-  <img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" width="100%">
-</p>
-
 <p align="right">
   <a href="https://ko-fi.com/Z5X220SWVK">
     <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi">
   </a>
+</p>
+
+<p align="center">
+  <img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" width="100%">
 </p>
 
 <h1 align="center">Domestia Vendor Choice</h1>
@@ -45,7 +45,11 @@ Beta. This mod is currently tested on the Domestia server.
 
 If you like this project, you can support development here:
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z5X220SWVK)
+<p align="center">
+  <a href="https://ko-fi.com/Z5X220SWVK">
+    <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi">
+  </a>
+</p>
 
 ## License
 
