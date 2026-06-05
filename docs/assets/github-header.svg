@@ -2,7 +2,7 @@
   <title id="title">Domestia Vendor Choice</title>
   <desc id="desc">Minecraft-style marketplace banner for Domestia Vendor Choice.</desc>
 
-  <image href="./github-header.png" x="0" y="0" width="2508" height="627" preserveAspectRatio="xMidYMid slice"></image>
+  <image href="/domestia-mods/domestia-vendor-choice/tree/main/docs/assets/github-header.png" x="0" y="0" width="2508" height="627" preserveAspectRatio="xMidYMid slice"></image>
 
   <rect x="0" y="0" width="2508" height="627" fill="rgba(0,0,0,0.28)"></rect>
 
