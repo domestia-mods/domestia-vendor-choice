@@ -8,9 +8,8 @@
   <img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" width="100%">
 </p>
 
-<h1 align="center">Domestia Vendor Choice</h1>
-
-<p align="center">
+<p>
+  <font size="150%">Domestia Vendor Choice</font>font><br>
   Owner-protected trading tools.
 </p>
 
