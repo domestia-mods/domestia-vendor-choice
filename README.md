@@ -4,9 +4,8 @@
   <img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" width="100%">
 </p>
 
+<h3 align="center">Owner-protected trading tools.</h3>
 <p align="center">
-  <h3 align="center">Owner-protected trading tools.</h3>
-  
   <a href="https://github.com/domestia-mods/domestia-vendor-choice/releases">
     <img src="https://img.shields.io/badge/status-beta-yellowgreen" alt="Status">
   </a>
