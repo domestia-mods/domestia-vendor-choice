@@ -44,11 +44,11 @@ The Vendor Safe gives players a secure place to store sales revenue and other va
 #### Features
 
 - Works as a 27-slot storage container.
----
+<sub>────────────────────────────────────────</sub>
 - The Vendor Safe automatically remembers its owner when placed.
 - The owner can rename or label the Vendor Safe using an anvil.
 - The owner name and custom label are displayed directly on the block.
----
+<sub>────────────────────────────────────────</sub>
 - Only the owner can access the contents of the Vendor Safe.
 - Other players cannot break the Vendor Safe.
 - Operators can break another player’s Vendor Safe for administrative recovery, but they do not receive its contents.
