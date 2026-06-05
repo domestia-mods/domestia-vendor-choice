@@ -23,7 +23,7 @@ The Vendor Machine allows players to set up fully functional player-to-player tr
 - The owner can list up to 5 different items for sale.
 - The owner chooses the required payment item and price for each listed product.
 - Items listed for sale are automatically displayed on the front panel of the Vendor Machine.
----
+--
 - The Vendor Machine automatically remembers its owner when placed.
 - The owner can rename or label the Vendor Machine using an anvil.
 - The owner name and custom label are displayed directly on the block. 
