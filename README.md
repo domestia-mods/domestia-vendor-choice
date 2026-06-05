@@ -1,8 +1,12 @@
+<p align="center">
+  <img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" width="100%">
+</p>
+
 # Domestia Vendor Choice
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Z5X220SWVK)
 
-A Minecraft Fabric mod that adds owner-controlled vendor machines and vendor safes.
+A Minecraft Fabric mod that adds owner-controlled vendor machines and objects.
 
 ## Features
 
