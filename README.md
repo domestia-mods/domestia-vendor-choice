@@ -4,7 +4,7 @@
   </a>
 </p>
 
-<a href="/"><img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" align="center" width="100%"></a>
+<a href="/domestia-mods/domestia-vendor-choice/"><img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" align="center" width="100%"></a>
 <h1 align="center">Domestia Vendor Choice</h1>
 <h3 align="center">Owner-protected trading tools.</h3>
 
