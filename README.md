@@ -11,7 +11,7 @@
   </a>
   <img src="https://img.shields.io/badge/Minecraft-1.21.x-brightgreen" alt="Minecraft">
   <img src="https://img.shields.io/badge/Loader-Fabric-blue" alt="Fabric">
-  
+  <br>
   <a href="https://ko-fi.com/Z5X220SWVK">
     <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi">
   </a>
