@@ -7,14 +7,19 @@
 <h3 align="center">Owner-protected trading tools.</h3>
 
 <p align="center">
+  ![Status](https://img.shields.io/badge/status-beta-yellowgreen)
+  ![Minecraft](https://img.shields.io/badge/Minecraft-1.21.x-brightgreen)
+  ![Fabric](https://img.shields.io/badge/Loader-Fabric-blue)
   <a href="https://ko-fi.com/Z5X220SWVK">
     <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi">
   </a>
 </p>
 
-![Status](https://img.shields.io/badge/status-beta-yellowgreen)
-![Minecraft](https://img.shields.io/badge/Minecraft-1.21.x-brightgreen)
-![Fabric](https://img.shields.io/badge/Loader-Fabric-blue)
+<p align="center">
+  ![Status](https://img.shields.io/badge/status-beta-yellowgreen)
+  ![Minecraft](https://img.shields.io/badge/Minecraft-1.21.x-brightgreen)
+  ![Fabric](https://img.shields.io/badge/Loader-Fabric-blue)
+</p>
 
 ## New In-Game Blocks
 
