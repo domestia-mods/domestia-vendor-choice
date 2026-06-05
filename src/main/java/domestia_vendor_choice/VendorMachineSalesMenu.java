@@ -77,7 +77,11 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 
 		this.vendorMachineBlockEntity = vendorMachineBlockEntity;
 
-		this.copyDisplayItemsFromVendor();
+		if (this.vendorMachineBlockEntity != null) {
+			this.vendorMachineBlockEntity.registerSalesMenuOpened();
+		}
+
+		this.syncDisplayItemsFromVendor();
 
 		this.addHiddenDisplaySlots();
 		this.addPaymentSlot();
@@ -97,36 +101,67 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 		return (buttonId - ID_CHECKOUT_BUTTON_BASE) % ID_CHECKOUT_QUANTITY_MULTIPLIER;
 	}
 
-	// Copies stock, price, and vault stacks from the block entity into hidden sync slots.
-	private void copyDisplayItemsFromVendor() {
+	@Override
+	public void broadcastChanges() {
+		// Sales GUI displays a hidden client-side snapshot of the vendor inventory.
+		// External changes, such as command block restock or hopper restock,
+		// modify the BlockEntity directly. Refresh the snapshot before every normal
+		// container sync cycle so the open GUI reflects the actual vendor state.
+		this.syncDisplayItemsFromVendor();
+
+		super.broadcastChanges();
+	}
+
+	private void syncDisplayItemsFromVendor() {
 		if (this.vendorMachineBlockEntity == null) {
 			return;
 		}
 
 		Container vendorInventory = this.vendorMachineBlockEntity.getInventory();
 
-		this.copyStockAndPriceDisplayItems(vendorInventory);
-		this.copyVaultDisplayItems(vendorInventory);
-
-		this.broadcastChanges();
+		this.syncStockAndPriceDisplayItems(vendorInventory);
+		this.syncVaultDisplayItems(vendorInventory);
 	}
 
-	private void copyStockAndPriceDisplayItems(Container vendorInventory) {
+	private void syncStockAndPriceDisplayItems(Container vendorInventory) {
 		for (int index = 0; index < VendorMachineBlockEntity.STOCK_SLOT_COUNT; index++) {
 			ItemStack stockStack = vendorInventory.getItem(VendorMachineBlockEntity.STOCK_SLOT_START + index);
 			ItemStack priceStack = vendorInventory.getItem(VendorMachineBlockEntity.PRICE_SLOT_START + index);
 
-			this.displayItems.setItem(INDEX_STOCK_DISPLAY_START + index, stockStack.copy());
-			this.displayItems.setItem(INDEX_PRICE_DISPLAY_START + index, priceStack.copy());
+			this.setDisplayItemIfChanged(INDEX_STOCK_DISPLAY_START + index, stockStack);
+			this.setDisplayItemIfChanged(INDEX_PRICE_DISPLAY_START + index, priceStack);
 		}
 	}
 
-	private void copyVaultDisplayItems(Container vendorInventory) {
+	private void syncVaultDisplayItems(Container vendorInventory) {
 		for (int index = 0; index < VendorMachineBlockEntity.VAULT_SLOT_COUNT; index++) {
 			ItemStack vaultStack = vendorInventory.getItem(VendorMachineBlockEntity.VAULT_SLOT_START + index);
 
-			this.displayItems.setItem(INDEX_VAULT_DISPLAY_START + index, vaultStack.copy());
+			this.setDisplayItemIfChanged(INDEX_VAULT_DISPLAY_START + index, vaultStack);
 		}
+	}
+
+	private void setDisplayItemIfChanged(int displaySlot, ItemStack sourceStack) {
+		ItemStack currentStack = this.displayItems.getItem(displaySlot);
+
+		if (areStacksEqual(currentStack, sourceStack)) {
+			return;
+		}
+
+		this.displayItems.setItem(displaySlot, sourceStack.copy());
+	}
+
+	private static boolean areStacksEqual(ItemStack firstStack, ItemStack secondStack) {
+		if (firstStack.isEmpty() && secondStack.isEmpty()) {
+			return true;
+		}
+
+		if (firstStack.isEmpty() || secondStack.isEmpty()) {
+			return false;
+		}
+
+		return firstStack.getCount() == secondStack.getCount()
+				&& ItemStack.isSameItemSameComponents(firstStack, secondStack);
 	}
 
 	private void addHiddenDisplaySlots() {
@@ -294,7 +329,11 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 		this.clearPaymentSlot();
 
 		this.vendorMachineBlockEntity.setChanged();
-		this.copyDisplayItemsFromVendor();
+		this.vendorMachineBlockEntity.startTransactionPulse();
+
+		// Refresh immediately for the successful transaction itself.
+		// Later external restock from command blocks/hoppers will be caught by broadcastChanges().
+		this.syncDisplayItemsFromVendor();
 		this.broadcastChanges();
 
 		ModSounds.playMachineCheckoutSuccess(player);
@@ -430,7 +469,7 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 		stockStack.shrink(quantity);
 
 		if (stockStack.isEmpty()) {
-			vendorInventory.setItem(VendorMachineBlockEntity.STOCK_SLOT_START + productIndex, ItemStack.EMPTY);
+			this.vendorMachineBlockEntity.clearStockAfterSale(productIndex);
 		}
 
 		this.giveToPlayer(player, purchasedStack);
@@ -464,6 +503,10 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 
 		if (!paymentStack.isEmpty()) {
 			this.giveToPlayer(player, paymentStack);
+		}
+
+		if (this.vendorMachineBlockEntity != null) {
+			this.vendorMachineBlockEntity.registerSalesMenuClosed();
 		}
 
 		ModSounds.playMachineSalesClose(player);

@@ -3,15 +3,18 @@ package domestia_vendor_choice;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -28,6 +31,9 @@ import net.minecraft.world.phys.BlockHitResult;
 public class VendorMachineBlock extends HorizontalDirectionalBlock implements EntityBlock {
 	public static final MapCodec<VendorMachineBlock> CODEC = simpleCodec(VendorMachineBlock::new);
 	public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+
+	// Transaction pulse output.
+	public static final int POWER_TRANSACTION_SIGNAL_STRENGTH = 15;
 
 	// Translation keys.
 	private static final String ID_SCREEN_SALES = "screen.domestia_vendor_choice.vendor_machine_sales";
@@ -83,16 +89,36 @@ public class VendorMachineBlock extends HorizontalDirectionalBlock implements En
 	}
 
 	@Override
-	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+	protected InteractionResult useItemOn(
+			ItemStack stack,
+			BlockState state,
+			Level level,
+			BlockPos pos,
+			Player player,
+			InteractionHand hand,
+			BlockHitResult hitResult
+	) {
 		return this.handleVendorInteraction(state, level, pos, player, hitResult);
 	}
 
 	@Override
-	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+	protected InteractionResult useWithoutItem(
+			BlockState state,
+			Level level,
+			BlockPos pos,
+			Player player,
+			BlockHitResult hitResult
+	) {
 		return this.handleVendorInteraction(state, level, pos, player, hitResult);
 	}
 
-	private InteractionResult handleVendorInteraction(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+	private InteractionResult handleVendorInteraction(
+			BlockState state,
+			Level level,
+			BlockPos pos,
+			Player player,
+			BlockHitResult hitResult
+	) {
 		Direction clickedSide = hitResult.getDirection();
 		Direction frontSide = state.getValue(FACING);
 		Direction backSide = frontSide.getOpposite();
@@ -144,7 +170,11 @@ public class VendorMachineBlock extends HorizontalDirectionalBlock implements En
 
 	private void openSalesMenu(Player player, VendorMachineBlockEntity vendorMachineBlockEntity) {
 		MenuProvider menuProvider = new SimpleMenuProvider(
-				(containerId, playerInventory, menuPlayer) -> new VendorMachineSalesMenu(containerId, playerInventory, vendorMachineBlockEntity),
+				(containerId, playerInventory, menuPlayer) -> new VendorMachineSalesMenu(
+						containerId,
+						playerInventory,
+						vendorMachineBlockEntity
+				),
 				TITLE_SALES
 		);
 
@@ -153,11 +183,66 @@ public class VendorMachineBlock extends HorizontalDirectionalBlock implements En
 
 	private void openControlMenu(Player player, VendorMachineBlockEntity vendorMachineBlockEntity) {
 		MenuProvider menuProvider = new SimpleMenuProvider(
-				(containerId, playerInventory, menuPlayer) -> new VendorMachineControlMenu(containerId, playerInventory, vendorMachineBlockEntity),
+				(containerId, playerInventory, menuPlayer) -> new VendorMachineControlMenu(
+						containerId,
+						playerInventory,
+						vendorMachineBlockEntity
+				),
 				TITLE_CONTROL
 		);
 
 		player.openMenu(menuProvider);
+	}
+
+	// Redstone output is emitted only during a successful checkout transaction pulse.
+	// Front opens Sales UI. Back opens Control UI. All other faces are utility output faces.
+	@Override
+	protected boolean isSignalSource(BlockState state) {
+		return true;
+	}
+
+	@Override
+	protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+		return this.getTransactionSignal(state, level, pos, direction);
+	}
+
+	@Override
+	protected int getDirectSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+		return this.getTransactionSignal(state, level, pos, direction);
+	}
+
+	private int getTransactionSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+		if (!isTransactionOutputFace(state, direction)) {
+			return 0;
+		}
+
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+
+		if (!(blockEntity instanceof VendorMachineBlockEntity vendorMachineBlockEntity)) {
+			return 0;
+		}
+
+		if (!vendorMachineBlockEntity.isTransactionPowered()) {
+			return 0;
+		}
+
+		return POWER_TRANSACTION_SIGNAL_STRENGTH;
+	}
+
+	public static boolean isTransactionOutputFace(BlockState state, Direction direction) {
+		Direction frontSide = state.getValue(FACING);
+		Direction backSide = frontSide.getOpposite();
+
+		return direction != frontSide && direction != backSide;
+	}
+
+	@Override
+	protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+
+		if (blockEntity instanceof VendorMachineBlockEntity vendorMachineBlockEntity) {
+			vendorMachineBlockEntity.handleTransactionPulseScheduledTick(level);
+		}
 	}
 
 	@Override

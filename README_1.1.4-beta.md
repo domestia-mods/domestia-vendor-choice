@@ -20,14 +20,18 @@ The Vendor Machine allows players to set up fully functional player-to-player tr
 
 #### Features
 
+- The owner can list up to 5 different items for sale.
+- The owner chooses the required payment item and price for each listed product.
 - Items listed for sale are automatically displayed on the front panel of the Vendor Machine.
+
 - The Vendor Machine automatically remembers its owner when placed.
 - The owner can rename or label the Vendor Machine using an anvil.
 - The owner name and custom label are displayed directly on the block.
-- The owner can list up to 5 different items for sale.
-- The owner chooses the required payment item and price for each listed product.
+
 - Payments from sales are deposited into a protected vault that only the owner can access.
+- Hopper automation is supported: stock can be restocked from the top and right-side input, and payments can be drained from the bottom vault output.
 - A successful purchase emits a short redstone transaction pulse from the utility faces: top, bottom, left, and right.
+
 - Only the owner can configure or modify the Vendor Machine settings.
 - Other players cannot break the Vendor Machine.
 - Operators can break another player’s Vendor Machine for administrative recovery, but they do not receive its contents.
@@ -40,9 +44,11 @@ The Vendor Safe gives players a secure place to store sales revenue and other va
 #### Features
 
 - Works as a 27-slot storage container.
+
 - The Vendor Safe automatically remembers its owner when placed.
 - The owner can rename or label the Vendor Safe using an anvil.
 - The owner name and custom label are displayed directly on the block.
+
 - Only the owner can access the contents of the Vendor Safe.
 - Other players cannot break the Vendor Safe.
 - Operators can break another player’s Vendor Safe for administrative recovery, but they do not receive its contents.
@@ -53,6 +59,7 @@ The Vendor Safe gives players a secure place to store sales revenue and other va
 - Dedicated interfaces with a familiar vanilla-style look and feel.
 - PBR-oriented textures with normal and specular maps.
 - Built-in sound feedback for block interactions.
+- Hopper support for automated restock and vault collection.
 - Transaction pulse support for purchase-triggered redstone automation.
 
 ## Requirements
