@@ -9,7 +9,7 @@
 </p>
 
 <p>
-  <font size="+2">Domestia Vendor Choice</font><br>
+  <font size="2pt">Domestia Vendor Choice</font><br>
   Owner-protected trading tools.
 </p>
 
