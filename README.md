@@ -15,9 +15,6 @@
 </p>
 
 
-
-A Minecraft Fabric mod that adds owner-controlled vendor machines and vendor safes.
-
 ## Features
 
 - **Vendor Machine**
