@@ -4,15 +4,16 @@
   <img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" width="100%">
 </p>
 
-<h3 align="center">Owner-protected trading tools.</h3>
-
 <p align="center">
-  <a href="https://ko-fi.com/Z5X220SWVK">
-    <a href="https://github.com/domestia-mods/domestia-vendor-choice/releases">
+  <h3 align="center">Owner-protected trading tools.</h3>
+  
+  <a href="https://github.com/domestia-mods/domestia-vendor-choice/releases">
     <img src="https://img.shields.io/badge/status-beta-yellowgreen" alt="Status">
   </a>
   <img src="https://img.shields.io/badge/Minecraft-1.21.x-brightgreen" alt="Minecraft">
-  <img src="https://img.shields.io/badge/Loader-Fabric-blue" alt="Fabric"><br>
+  <img src="https://img.shields.io/badge/Loader-Fabric-blue" alt="Fabric">
+  
+  <a href="https://ko-fi.com/Z5X220SWVK">
     <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi">
   </a>
 </p>
