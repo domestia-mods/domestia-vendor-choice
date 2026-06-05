@@ -60,7 +60,7 @@ The Vendor Safe gives players a secure place to store sales revenue and other va
 - PBR-oriented textures with normal and specular maps.
 - Built-in sound feedback for block interactions.
 - Hopper support for automated restock and vault collection.
-- Transaction pulse support for purchase-triggered redstone automation.
+- Transaction pulse support for purchase-triggered redstone automation. 
 
 ## Requirements
 
