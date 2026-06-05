@@ -4,10 +4,11 @@
   </a>
 </p>
 
-<h1 align="center">Domestia Vendor Choice<br>
-  <img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" width="100%">
-</h1>
-<h3 align="center">Owner-protected trading tools.</h3>
+<h1 align="center">Domestia Vendor Choice</h1>
+<h3 align="center">
+  <img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" width="100%"><br>
+  Owner-protected trading tools.
+</h3>
 
 
 ## New In-Game Blocks
