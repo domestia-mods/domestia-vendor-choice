@@ -15,21 +15,44 @@
 </p>
 
 
-## Features
+## New In-Game Blocks
 
-- **Vendor Machine**
-  - Owner-controlled configuration interface.
-  - Public sales interface.
-  - Stock, price, payment, and vault logic.
-  - Front panel item display.
-  - Built-in vanilla sound effects.
-  - PBR-ready textures with normal and specular maps.
+### Vendor Machine
 
-- **Vendor Safe**
-  - Owner-only 27-slot storage.
-  - Owner name and custom anvil label rendering.
-  - Operator break access without content access.
-  - PBR-ready textures with normal and specular maps.
+The Vendor Machine allows players to set up fully functional player-to-player trading based on direct item exchange.
+
+#### Features
+
+- Items listed for sale are automatically displayed on the front panel of the Vendor Machine.
+- The Vendor Machine automatically remembers its owner when placed.
+- The owner can rename the Vendor Machine using an anvil.
+- The owner can list up to 5 different items for sale.
+- The owner chooses the required payment item and price for each listed product.
+- Payments from sales are deposited into a protected vault that only the owner can access.
+- Only the owner can configure or modify the Vendor Machine settings.
+- Other players cannot break the Vendor Machine.
+- Operators can break another player’s Vendor Machine for administrative recovery, but they do not receive its contents.
+- Only the owner can break their own Vendor Machine and recover the stored contents.
+
+### Vendor Safe
+
+The Vendor Safe gives players a secure place to store sales revenue and other valuable items.
+
+#### Features
+
+- Works as a 27-slot storage container.
+- The Vendor Safe automatically remembers its owner when placed.
+- The owner can rename or label the Vendor Safe using an anvil.
+- Only the owner can access the contents of the Vendor Safe.
+- Other players cannot break the Vendor Safe.
+- Operators can break another player’s Vendor Safe for administrative recovery, but they do not receive its contents.
+- Only the owner can break their own Vendor Safe and recover the stored contents.
+
+## Additional Features
+
+- Dedicated interfaces with a familiar vanilla-style look and feel.
+- PBR-oriented textures with normal and specular maps.
+- Built-in sound feedback for block interactions.
 
 ## Requirements
 
