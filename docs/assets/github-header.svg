@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2508" height="627" viewBox="0 0 2508 627" role="img" aria-labelledby="title desc">
+  <title id="title">Domestia Vendor Choice</title>
+  <desc id="desc">Minecraft-style marketplace banner for Domestia Vendor Choice.</desc>
+
+  <image href="github-header.png" x="0" y="0" width="2508" height="627" preserveAspectRatio="xMidYMid slice"></image>
+
+  <rect x="0" y="0" width="2508" height="627" fill="rgba(0,0,0,0.28)"></rect>
+
+  <text x="1254" y="305" text-anchor="middle" dominant-baseline="middle" font-family="Verdana, Arial, sans-serif" font-size="118" font-weight="800" fill="#f5ffe6" stroke="#1f2a12" stroke-width="10" paint-order="stroke fill" letter-spacing="2">
+    Domestia Vendor Choice
+  </text>
+
+  <text x="1254" y="405" text-anchor="middle" dominant-baseline="middle" font-family="Verdana, Arial, sans-serif" font-size="42" font-weight="700" fill="#ccff66" stroke="#1f2a12" stroke-width="5" paint-order="stroke fill" letter-spacing="1">
+    Owner-protected trading and private storage for Minecraft Fabric
+  </text>
+</svg>
