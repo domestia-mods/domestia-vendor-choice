@@ -1,8 +1,14 @@
 <p align="center">
-  <img src="docs/assets/github-header.svg" alt="Domestia Vendor Choice" width="100%">
+  <img src="docs/assets/github-header.png" alt="Domestia Vendor Choice" width="100%">
 </p>
 
+<h1 align="center">Domestia Vendor Choice</h1>
+
 <p align="center">
+  Owner-protected trading blocks for Minecraft Fabric.
+</p>
+
+<p align="right">
   <a href="https://ko-fi.com/Z5X220SWVK">
     <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi">
   </a>
