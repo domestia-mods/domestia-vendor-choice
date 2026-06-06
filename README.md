@@ -5,7 +5,7 @@
 </p>
 
 <h3 align="center">
-  Owner-protected trading tools.<br>
+  Owner-aware trading, storage, and logistics tools for Minecraft multiplayer survival worlds.<br>
   <a href="https://github.com/domestia-mods/domestia-vendor-choice/releases">
     <img src="https://img.shields.io/badge/status-beta-yellowgreen" alt="Status">
   </a>
@@ -19,69 +19,56 @@
   </a>
 </p>
 
-## New In-Game Blocks
+## About
 
-### Vendor Machine
+**Domestia Vendor Choice** is a Fabric mod for Minecraft focused on player-to-player economy.
 
-The Vendor Machine allows players to set up fully functional player-to-player trading based on direct item exchange.
+It adds protected commercial infrastructure for multiplayer survival servers: vending machines, private storage, and owner-aware item logistics.
 
-#### Features
+The mod is designed for players who want to build shops, manage stock, collect payments, and automate trading systems while preserving ownership and controlled access.
 
-- The owner can list up to 5 different items for sale.
-- The owner chooses the required payment item and price for each listed product.
-- Items listed for sale are automatically displayed on the front panel of the Vendor Machine.
-- The Vendor Machine automatically remembers its owner when placed.
-- The owner can rename or label the Vendor Machine using an anvil.
-- The owner name and custom label are displayed directly on the block.
-- Payments from sales are deposited into a protected vault that only the owner can access.
-- Hopper automation is supported: stock can be restocked from the top and right-side input, and payments can be drained from the bottom vault output.
-- A successful purchase emits a short redstone transaction pulse from the utility faces: top, bottom, left, and right.<br>
-- Only the owner can configure or modify the Vendor Machine settings.
-- Other players cannot break the Vendor Machine.
-- Operators can break another player’s Vendor Machine for administrative recovery, but they do not receive its contents.
-- Only the owner can break their own Vendor Machine and recover the stored contents.
+## Core Features
 
-### Vendor Safe
+- Owner-aware Vendor blocks.
+- Player-operated vending machines.
+- Protected commercial storage.
+- Private logistics for shop infrastructure.
+- Purchase-triggered redstone transaction pulse.
+- Vanilla-compatible interfaces and survival-oriented crafting.
+- PBR-oriented block textures with normal and specular maps.
 
-The Vendor Safe gives players a secure place to store sales revenue and other valuable items.
+## Main Blocks
 
-#### Features
+Domestia Vendor Choice currently includes:
 
-- Works as a 27-slot storage container.
-- The Vendor Safe automatically remembers its owner when placed.
-- The owner can rename or label the Vendor Safe using an anvil.
-- The owner name and custom label are displayed directly on the block.
-- Only the owner can access the contents of the Vendor Safe.
-- Other players cannot break the Vendor Safe.
-- Operators can break another player’s Vendor Safe for administrative recovery, but they do not receive its contents.
-- Only the owner can break their own Vendor Safe and recover the stored contents.
+- **Vendor Machine** — a player-owned vending machine for direct item exchange.
+- **Vendor Safe** — protected private storage for shop supplies, revenue, and logistics.
+- **Vendor Hopper** — owner-aware item logistics for Vendor infrastructure and intentional container connections.
 
+Detailed behavior, layouts, recipes, and access rules are documented in the project wiki.
 
-### Vendor Hopper
+## Documentation
 
-The Vendor Hopper provides owner-protected item logistics for player trading infrastructure.
+Full documentation is available in the GitHub Wiki:
 
-#### Features
+[Domestia Vendor Choice Wiki](https://github.com/domestia-mods/domestia-vendor-choice/wiki)
 
-- Works as a private 5-slot logistics container.
-- The Vendor Hopper automatically remembers its owner when placed.
-- Only the owner can access the contents of the Vendor Hopper.
-- Vendor Hoppers can move items between regular containers and trusted Vendor blocks.
-- Vendor Hoppers can interact with Vendor Machines, Vendor Safes, and other Vendor Hoppers when ownership matches.
-- Vanilla hoppers cannot access the contents of a Vendor Hopper.
-- Other players cannot break the Vendor Hopper.
-- Operators can break another player’s Vendor Hopper for administrative recovery, but they do not receive its contents.
-- Only the owner can break their own Vendor Hopper and recover the stored contents.
+Useful starting pages:
 
+- [Creating a Basic Shop](https://github.com/domestia-mods/domestia-vendor-choice/wiki/Creating-a-Basic-Shop)
+- [Automatic Restock and Payment Collection](https://github.com/domestia-mods/domestia-vendor-choice/wiki/Automatic-Restock-and-Payment-Collection)
+- [Protected Logistics Rules](https://github.com/domestia-mods/domestia-vendor-choice/wiki/Protected-Logistics-Rules)
+- [Ownership and Access Rules](https://github.com/domestia-mods/domestia-vendor-choice/wiki/Ownership-and-Access-Rules)
 
-## Additional Features
+## Releases
 
-- Dedicated interfaces with a familiar vanilla-style look and feel.
-- PBR-oriented textures with normal and specular maps.
-- Built-in sound feedback for block interactions.
-- Hopper support for automated restock and vault collection.
-- Transaction pulse support for purchase-triggered redstone automation.
-- Updated crafting recipes for Vendor Machine, Vendor Safe, and Vendor Hopper. 
+Downloads and release notes are available here:
+
+[GitHub Releases](https://github.com/domestia-mods/domestia-vendor-choice/releases)
+
+For exact version changes, see:
+
+[CHANGELOG.md](CHANGELOG.md)
 
 ## Requirements
 
@@ -91,7 +78,9 @@ The Vendor Hopper provides owner-protected item logistics for player trading inf
 
 ## Status
 
-Beta. This mod is currently tested on the Domestia server.
+Beta.
+
+This mod is currently tested on the Domestia server. Behavior, recipes, textures, and documentation may continue to change while the mod evolves.
 
 ## Support
 
