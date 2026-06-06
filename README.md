@@ -5,7 +5,6 @@
 </p>
 
 <h3 align="center">
-  Owner-protected trading tools.<br>
   <a href="https://github.com/domestia-mods/domestia-vendor-choice/releases">
     <img src="https://img.shields.io/badge/status-beta-yellowgreen" alt="Status">
   </a>
