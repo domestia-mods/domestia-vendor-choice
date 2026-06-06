@@ -1,20 +1,17 @@
 {
   "block.domestia_vendor_choice.vendor_machine": "Vendor Machine",
   "block.domestia_vendor_choice.vendor_safe": "Vendor Safe",
-
   "screen.domestia_vendor_choice.vendor_machine_control": "Vendor Machine Control",
   "screen.domestia_vendor_choice.vendor_machine_control.stock": "Stock",
   "screen.domestia_vendor_choice.vendor_machine_control.price": "Price",
   "screen.domestia_vendor_choice.vendor_machine_control.vault": "Vault",
   "screen.domestia_vendor_choice.vendor_machine_control.inventory": "Inventory",
-
   "screen.domestia_vendor_choice.vendor_machine_sales": "Vendor Machine Sales",
   "screen.domestia_vendor_choice.vendor_machine_sales.price": "Price",
   "screen.domestia_vendor_choice.vendor_machine_sales.stock": "Stock",
   "screen.domestia_vendor_choice.vendor_machine_sales.deal": "Deal",
   "screen.domestia_vendor_choice.vendor_machine_sales.inventory": "Inventory",
   "screen.domestia_vendor_choice.vendor_machine_sales.checkout": "Checkout",
-
   "screen.domestia_vendor_choice.vendor_machine_sales.message.select_item": "Select item",
   "screen.domestia_vendor_choice.vendor_machine_sales.message.sold_out": "Sold out",
   "screen.domestia_vendor_choice.vendor_machine_sales.message.no_price": "No price",
@@ -24,12 +21,12 @@
   "screen.domestia_vendor_choice.vendor_machine_sales.message.checkout_unavailable": "Unavailable",
   "screen.domestia_vendor_choice.vendor_machine_sales.message.no_stock": "No stock",
   "screen.domestia_vendor_choice.vendor_machine_sales.message.thank_you": "Thank you!",
-
   "screen.domestia_vendor_choice.vendor_safe": "Vendor Safe",
-
   "message.domestia_vendor_choice.access_denied": "Access denied",
-
   "modmenu.nameTranslation.domestia_vendor_choice": "Domestia Vendor Choice",
   "modmenu.summaryTranslation.domestia_vendor_choice": "Owner-protected vending and private storage.",
-  "modmenu.descriptionTranslation.domestia_vendor_choice": "Domestia Vendor Choice adds owner-protected vendor machines and vendor safes for multiplayer survival worlds. Vendor Machines support configurable stock, prices, protected vault storage, front item display, sales UI feedback, vanilla sound effects, and owner-only control access. Vendor Safes provide private barrel-style storage with owner-only access and administrative recovery rules. Source code and issue tracking are available on GitHub: https://github.com/domestia-mods/domestia-vendor-choice. If this mod made your server a little better, buy me a coffee: https://ko-fi.com/Z5X220SWVK"
+  "modmenu.descriptionTranslation.domestia_vendor_choice": "Domestia Vendor Choice adds owner-protected vendor machines and vendor safes for multiplayer survival worlds. Vendor Machines support configurable stock, prices, protected vault storage, front item display, sales UI feedback, vanilla sound effects, and owner-only control access. Vendor Safes provide private barrel-style storage with owner-only access and administrative recovery rules. Source code and issue tracking are available on GitHub: https://github.com/domestia-mods/domestia-vendor-choice. If this mod made your server a little better, buy me a coffee: https://ko-fi.com/Z5X220SWVK",
+  "block.domestia_vendor_choice.vendor_hopper": "Vendor Hopper",
+  "screen.domestia_vendor_choice.vendor_hopper": "Vendor Hopper",
+  "message.domestia_vendor_choice.vendor_hopper_break_denied": "You cannot break this Vendor Hopper."
 }

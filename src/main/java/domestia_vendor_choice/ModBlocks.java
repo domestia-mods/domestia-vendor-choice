@@ -35,6 +35,16 @@ public class ModBlocks {
 			true
 	);
 
+	public static final Block VENDOR_HOPPER = register(
+			"vendor_hopper",
+			VendorHopperBlock::new,
+			BlockBehaviour.Properties.of()
+					.strength(3.0f, 4.8f)
+					.sound(SoundType.METAL)
+					.noOcclusion(),
+			true
+	);
+
 	private static Block register(
 			String name,
 			Function<BlockBehaviour.Properties, Block> blockFactory,
@@ -75,6 +85,7 @@ public class ModBlocks {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS).register(output -> {
 			output.accept(VENDOR_MACHINE.asItem());
 			output.accept(VENDOR_SAFE.asItem());
+			output.accept(VENDOR_HOPPER.asItem());
 		});
 
 		DomestiaVendorChoice.LOGGER.info("Registering Domestia Vendor Choice blocks.");

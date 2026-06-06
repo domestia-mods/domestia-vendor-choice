@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "domestia_vendor_choice:block/vendor_hopper_down"
+    },
+    "facing=north": {
+      "model": "domestia_vendor_choice:block/vendor_hopper_side"
+    },
+    "facing=east": {
+      "model": "domestia_vendor_choice:block/vendor_hopper_side",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "domestia_vendor_choice:block/vendor_hopper_side",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "domestia_vendor_choice:block/vendor_hopper_side",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "I I",
+    "ISI",
+    " I "
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "S": "domestia_vendor_choice:vendor_safe"
+  },
+  "result": {
+    "id": "domestia_vendor_choice:vendor_hopper",
+    "count": 1
+  }
+}

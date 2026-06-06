@@ -13,10 +13,12 @@ public class ModEvents {
 	// Translation keys.
 	private static final String ID_MESSAGE_MACHINE_BREAK_DENIED = "message.domestia_vendor_choice.vendor_machine_break_denied";
 	private static final String ID_MESSAGE_SAFE_BREAK_DENIED = "message.domestia_vendor_choice.vendor_safe_break_denied";
+	private static final String ID_MESSAGE_HOPPER_BREAK_DENIED = "message.domestia_vendor_choice.vendor_hopper_break_denied";
 
 	// Feedback messages.
 	private static final Component MESSAGE_MACHINE_BREAK_DENIED = Component.translatable(ID_MESSAGE_MACHINE_BREAK_DENIED);
 	private static final Component MESSAGE_SAFE_BREAK_DENIED = Component.translatable(ID_MESSAGE_SAFE_BREAK_DENIED);
+	private static final Component MESSAGE_HOPPER_BREAK_DENIED = Component.translatable(ID_MESSAGE_HOPPER_BREAK_DENIED);
 
 	public static void initialize() {
 		PlayerBlockBreakEvents.BEFORE.register((level, player, pos, state, blockEntity) -> {
@@ -26,6 +28,10 @@ public class ModEvents {
 
 			if (state.is(ModBlocks.VENDOR_SAFE)) {
 				return handleVendorSafeBreak(level, player, pos, blockEntity);
+			}
+
+			if (state.is(ModBlocks.VENDOR_HOPPER)) {
+				return handleVendorHopperBreak(level, player, pos, blockEntity);
 			}
 
 			return true;
@@ -64,6 +70,22 @@ public class ModEvents {
 		return true;
 	}
 
+
+	private static boolean handleVendorHopperBreak(Level level, Player player, BlockPos pos, BlockEntity blockEntity) {
+		if (!(blockEntity instanceof VendorHopperBlockEntity vendorHopperBlockEntity)) {
+			return true;
+		}
+
+		if (!vendorHopperBlockEntity.canBreak(player)) {
+			player.sendSystemMessage(MESSAGE_HOPPER_BREAK_DENIED);
+			return false;
+		}
+
+		handlePrivateContainerBreak(level, player, pos, vendorHopperBlockEntity);
+
+		return true;
+	}
+
 	private static void handlePrivateContainerBreak(Level level, Player player, BlockPos pos, Container container) {
 		if (level.isClientSide()) {
 			return;
@@ -76,6 +98,11 @@ public class ModEvents {
 
 		if (container instanceof VendorSafeBlockEntity vendorSafeBlockEntity) {
 			handleVendorSafeContentsBreak(level, player, pos, vendorSafeBlockEntity);
+			return;
+		}
+
+		if (container instanceof VendorHopperBlockEntity vendorHopperBlockEntity) {
+			handleVendorHopperContentsBreak(level, player, pos, vendorHopperBlockEntity);
 		}
 	}
 
@@ -93,6 +120,14 @@ public class ModEvents {
 		}
 
 		vendorSafeBlockEntity.clearContent();
+	}
+
+	private static void handleVendorHopperContentsBreak(Level level, Player player, BlockPos pos, VendorHopperBlockEntity vendorHopperBlockEntity) {
+		if (vendorHopperBlockEntity.isOwner(player.getUUID())) {
+			dropContainerContents(level, pos, vendorHopperBlockEntity);
+		}
+
+		vendorHopperBlockEntity.clearContent();
 	}
 
 	private static void dropContainerContents(Level level, BlockPos pos, Container container) {

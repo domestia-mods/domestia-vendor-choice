@@ -534,6 +534,122 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 		return vendorSafeBlockEntity;
 	}
 
+
+	// Secure input for owner-matched Vendor Hopper.
+	// Vendor Hopper may restock only Stock slots. Price and Vault are never written by hopper logistics.
+	public ItemStack insertStockForSecureTransfer(ItemStack sourceStack) {
+		if (sourceStack.isEmpty()) {
+			return ItemStack.EMPTY;
+		}
+
+		ItemStack remainingStack = sourceStack.copy();
+
+		this.mergeSecureTransferIntoExistingStock(remainingStack);
+		this.insertSecureTransferIntoActiveSoldOutStock(remainingStack);
+
+		if (remainingStack.getCount() != sourceStack.getCount()) {
+			this.setChanged();
+		}
+
+		return remainingStack;
+	}
+
+	private void mergeSecureTransferIntoExistingStock(ItemStack remainingStack) {
+		for (int stockIndex = 0; stockIndex < STOCK_SLOT_COUNT; stockIndex++) {
+			if (remainingStack.isEmpty()) {
+				return;
+			}
+
+			int stockSlot = STOCK_SLOT_START + stockIndex;
+			ItemStack stockStack = this.items.get(stockSlot);
+
+			if (stockStack.isEmpty()) {
+				continue;
+			}
+
+			if (!ItemStack.isSameItemSameComponents(stockStack, remainingStack)) {
+				continue;
+			}
+
+			int freeSpace = Math.min(stockStack.getMaxStackSize(), this.getMaxStackSize()) - stockStack.getCount();
+
+			if (freeSpace <= 0) {
+				continue;
+			}
+
+			int movedCount = Math.min(freeSpace, remainingStack.getCount());
+
+			stockStack.grow(movedCount);
+			remainingStack.shrink(movedCount);
+		}
+	}
+
+	private void insertSecureTransferIntoActiveSoldOutStock(ItemStack remainingStack) {
+		if (this.openSalesMenuCount <= 0) {
+			return;
+		}
+
+		for (int stockIndex = 0; stockIndex < STOCK_SLOT_COUNT; stockIndex++) {
+			if (remainingStack.isEmpty()) {
+				return;
+			}
+
+			int stockSlot = STOCK_SLOT_START + stockIndex;
+			ItemStack stockStack = this.items.get(stockSlot);
+
+			if (!stockStack.isEmpty()) {
+				continue;
+			}
+
+			ItemStack templateStack = this.activeStockTemplates.get(stockIndex);
+
+			if (templateStack.isEmpty()) {
+				continue;
+			}
+
+			if (!ItemStack.isSameItemSameComponents(templateStack, remainingStack)) {
+				continue;
+			}
+
+			ItemStack insertedStack = remainingStack.copy();
+			insertedStack.setCount(Math.min(remainingStack.getMaxStackSize(), remainingStack.getCount()));
+
+			this.items.set(stockSlot, insertedStack);
+			remainingStack.shrink(insertedStack.getCount());
+		}
+	}
+
+	// Secure output for owner-matched Vendor Hopper.
+	// Vendor Hopper may extract only received payments from Vault. Stock and Price are never drained by hopper logistics.
+	public ItemStack extractVaultForSecureTransfer(int maxCount) {
+		if (maxCount <= 0) {
+			return ItemStack.EMPTY;
+		}
+
+		for (int index = 0; index < VAULT_SLOT_COUNT; index++) {
+			int vaultSlot = VAULT_SLOT_START + index;
+			ItemStack vaultStack = this.items.get(vaultSlot);
+
+			if (vaultStack.isEmpty()) {
+				continue;
+			}
+
+			ItemStack extractedStack = vaultStack.copy();
+			extractedStack.setCount(Math.min(maxCount, vaultStack.getCount()));
+
+			vaultStack.shrink(extractedStack.getCount());
+
+			if (vaultStack.isEmpty()) {
+				this.items.set(vaultSlot, ItemStack.EMPTY);
+			}
+
+			this.setChanged();
+			return extractedStack;
+		}
+
+		return ItemStack.EMPTY;
+	}
+
 	@Override
 	public int getContainerSize() {
 		return INVENTORY_SIZE;

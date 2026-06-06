@@ -28,6 +28,11 @@ public class DomestiaVendorChoiceClient implements ClientModInitializer {
 				ModMenus.VENDOR_SAFE,
 				VendorSafeScreen::new
 		);
+
+		MenuScreens.register(
+				ModMenus.VENDOR_HOPPER,
+				VendorHopperScreen::new
+		);
 	}
 
 	private void registerBlockEntityRenderers() {

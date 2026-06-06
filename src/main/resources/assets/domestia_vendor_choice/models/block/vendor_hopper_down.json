@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/hopper",
+  "textures": {
+    "particle": "domestia_vendor_choice:block/vendor_hopper_outside",
+    "top": "domestia_vendor_choice:block/vendor_hopper_top",
+    "side": "domestia_vendor_choice:block/vendor_hopper_outside",
+    "inside": "domestia_vendor_choice:block/vendor_hopper_inside"
+  }
+}

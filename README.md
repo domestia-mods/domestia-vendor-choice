@@ -9,7 +9,7 @@
   <a href="https://github.com/domestia-mods/domestia-vendor-choice/releases">
     <img src="https://img.shields.io/badge/status-beta-yellowgreen" alt="Status">
   </a>
-  <img src="https://img.shields.io/badge/Minecraft-26.1.2%2B-brightgreen" alt="Minecraft">
+  <img src="https://img.shields.io/badge/Minecraft-1.21.x-brightgreen" alt="Minecraft">
   <img src="https://img.shields.io/badge/Loader-Fabric-blue" alt="Fabric">
 </h3>
 
@@ -34,7 +34,7 @@ The Vendor Machine allows players to set up fully functional player-to-player tr
 - The owner can rename or label the Vendor Machine using an anvil.
 - The owner name and custom label are displayed directly on the block.
 - Payments from sales are deposited into a protected vault that only the owner can access.
-- Protected Vendor Safe logistics is supported: stock can be restocked from an owner-matched Vendor Safe above the machine, and payments can be deposited into an owner-matched Vendor Safe below it.
+- Hopper automation is supported: stock can be restocked from the top and right-side input, and payments can be drained from the bottom vault output.
 - A successful purchase emits a short redstone transaction pulse from the utility faces: top, bottom, left, and right.<br>
 - Only the owner can configure or modify the Vendor Machine settings.
 - Other players cannot break the Vendor Machine.
@@ -47,28 +47,45 @@ The Vendor Safe gives players a secure place to store sales revenue and other va
 
 #### Features
 
-- Works as a 54-slot storage container.
+- Works as a 27-slot storage container.
 - The Vendor Safe automatically remembers its owner when placed.
 - The owner can rename or label the Vendor Safe using an anvil.
 - The owner name and custom label are displayed directly on the block.
 - Only the owner can access the contents of the Vendor Safe.
-- Vendor Safes can participate in protected owner-matched Vendor Machine logistics.
 - Other players cannot break the Vendor Safe.
 - Operators can break another player’s Vendor Safe for administrative recovery, but they do not receive its contents.
 - Only the owner can break their own Vendor Safe and recover the stored contents.
+
+
+### Vendor Hopper
+
+The Vendor Hopper provides owner-protected item logistics for player trading infrastructure.
+
+#### Features
+
+- Works as a private 5-slot logistics container.
+- The Vendor Hopper automatically remembers its owner when placed.
+- Only the owner can access the contents of the Vendor Hopper.
+- Vendor Hoppers can move items between regular containers and trusted Vendor blocks.
+- Vendor Hoppers can interact with Vendor Machines, Vendor Safes, and other Vendor Hoppers when ownership matches.
+- Vanilla hoppers cannot access the contents of a Vendor Hopper.
+- Other players cannot break the Vendor Hopper.
+- Operators can break another player’s Vendor Hopper for administrative recovery, but they do not receive its contents.
+- Only the owner can break their own Vendor Hopper and recover the stored contents.
+
 
 ## Additional Features
 
 - Dedicated interfaces with a familiar vanilla-style look and feel.
 - PBR-oriented textures with normal and specular maps.
 - Built-in sound feedback for block interactions.
-- Protected owner-matched logistics between Vendor Machines and Vendor Safes.
-- Vanilla hoppers are blocked from private Vendor Machine and Vendor Safe storage.
+- Hopper support for automated restock and vault collection.
 - Transaction pulse support for purchase-triggered redstone automation.
+- Updated crafting recipes for Vendor Machine, Vendor Safe, and Vendor Hopper. 
 
 ## Requirements
 
-- Minecraft: 26.1.2+
+- Minecraft: 1.21.x
 - Fabric Loader
 - Fabric API
 

@@ -25,6 +25,12 @@ public class ModMenus {
 			new MenuType<>(VendorSafeMenu::new, FeatureFlags.DEFAULT_FLAGS)
 	);
 
+	public static final MenuType<VendorHopperMenu> VENDOR_HOPPER = Registry.register(
+			BuiltInRegistries.MENU,
+			Identifier.fromNamespaceAndPath(DomestiaVendorChoice.MOD_ID, "vendor_hopper"),
+			new MenuType<>(VendorHopperMenu::new, FeatureFlags.DEFAULT_FLAGS)
+	);
+
 	public static void initialize() {
 		DomestiaVendorChoice.LOGGER.info("Registering Domestia Vendor Choice menus.");
 	}

@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "domestia_vendor_choice:item/vendor_hopper"
+  }
+}
