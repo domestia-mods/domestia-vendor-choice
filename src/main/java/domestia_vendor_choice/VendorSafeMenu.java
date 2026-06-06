@@ -14,16 +14,16 @@ public class VendorSafeMenu extends AbstractContainerMenu {
 	// Base slot geometry.
 	private static final int SIZE_SLOT = 18;
 
-	// Safe inventory layout.
+	// Safe inventory layout. Double-chest style.
 	private static final int POS_SAFE_INVENTORY_X = 8;
 	private static final int POS_SAFE_INVENTORY_Y = 18;
 	private static final int LAYOUT_SAFE_COLUMNS = 9;
-	private static final int LAYOUT_SAFE_ROWS = 3;
+	private static final int LAYOUT_SAFE_ROWS = 6;
 
 	// Player inventory layout.
 	private static final int POS_PLAYER_INVENTORY_X = 8;
-	private static final int POS_PLAYER_INVENTORY_Y = 84;
-	private static final int POS_PLAYER_HOTBAR_Y = 142;
+	private static final int POS_PLAYER_INVENTORY_Y = 139;
+	private static final int POS_PLAYER_HOTBAR_Y = 197;
 
 	// Vanilla player inventory dimensions.
 	private static final int LAYOUT_PLAYER_INVENTORY_COLUMNS = 9;

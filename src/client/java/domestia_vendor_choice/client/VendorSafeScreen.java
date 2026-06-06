@@ -11,12 +11,12 @@ import net.minecraft.world.entity.player.Inventory;
 public class VendorSafeScreen extends AbstractContainerScreen<VendorSafeMenu> {
 	// Screen and vanilla generic container texture dimensions.
 	private static final int SIZE_SCREEN_WIDTH = 176;
-	private static final int SIZE_SCREEN_HEIGHT = 168;
+	private static final int SIZE_SCREEN_HEIGHT = 222;
 	private static final int SIZE_TEXTURE_WIDTH = 256;
 	private static final int SIZE_TEXTURE_HEIGHT = 256;
 
-	// Safe inventory layout.
-	private static final int COUNT_CONTAINER_ROWS = 3;
+	// Safe inventory layout. Double-chest style.
+	private static final int COUNT_CONTAINER_ROWS = 6;
 	private static final int SIZE_SLOT = 18;
 
 	// Vanilla generic_54 layout sections.

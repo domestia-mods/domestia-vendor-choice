@@ -1,6 +1,7 @@
 package domestia_vendor_choice;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
@@ -13,6 +14,7 @@ import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -23,7 +25,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.UUID;
 
-public class VendorSafeBlockEntity extends BlockEntity implements Container {
+public class VendorSafeBlockEntity extends BlockEntity implements Container, WorldlyContainer {
 	// Persistent NBT keys.
 	private static final String KEY_OWNER_UUID = "OwnerUuid";
 	private static final String KEY_OWNER_NAME = "OwnerName";
@@ -35,8 +37,12 @@ public class VendorSafeBlockEntity extends BlockEntity implements Container {
 	// Fallback text for legacy blocks that have OwnerUuid but no stored owner name.
 	public static final String DEFAULT_OWNER_NAME = "Owner";
 
-	// Safe inventory layout.
-	public static final int SAFE_SLOT_COUNT = 27;
+	// Safe inventory layout. Double-chest capacity.
+	public static final int SAFE_SLOT_COUNT = 54;
+
+	// Vanilla hopper exposure.
+	// Security rule: vanilla hoppers must never access private Vendor Safe storage.
+	private static final int[] VANILLA_HOPPER_NO_SLOTS = new int[0];
 
 	// Interaction constants.
 	private static final double STILL_VALID_MAX_DISTANCE_SQUARED = 64.0;
@@ -67,6 +73,10 @@ public class VendorSafeBlockEntity extends BlockEntity implements Container {
 
 		this.loadOwner(input);
 		this.loadDisplayName(input);
+
+		// Clear first so legacy 27-slot safes load safely into the new 54-slot layout.
+		this.clearItemsWithoutUpdate();
+
 		ContainerHelper.loadAllItems(input, this.items);
 	}
 
@@ -206,6 +216,134 @@ public class VendorSafeBlockEntity extends BlockEntity implements Container {
 		this.setChanged();
 	}
 
+	// Secure transfer input. Only our owner-matched Vendor Machine code should call this.
+	public ItemStack insertForSecureTransfer(ItemStack sourceStack) {
+		if (sourceStack.isEmpty()) {
+			return ItemStack.EMPTY;
+		}
+
+		ItemStack remainingStack = sourceStack.copy();
+
+		this.mergeSecureTransferIntoExistingStacks(remainingStack);
+		this.insertSecureTransferIntoEmptySlots(remainingStack);
+
+		if (remainingStack.getCount() != sourceStack.getCount()) {
+			this.setChanged();
+		}
+
+		return remainingStack;
+	}
+
+	private void mergeSecureTransferIntoExistingStacks(ItemStack remainingStack) {
+		for (int slot = 0; slot < SAFE_SLOT_COUNT; slot++) {
+			if (remainingStack.isEmpty()) {
+				return;
+			}
+
+			ItemStack safeStack = this.items.get(slot);
+
+			if (safeStack.isEmpty()) {
+				continue;
+			}
+
+			if (!ItemStack.isSameItemSameComponents(safeStack, remainingStack)) {
+				continue;
+			}
+
+			int freeSpace = safeStack.getMaxStackSize() - safeStack.getCount();
+
+			if (freeSpace <= 0) {
+				continue;
+			}
+
+			int movedCount = Math.min(freeSpace, remainingStack.getCount());
+
+			safeStack.grow(movedCount);
+			remainingStack.shrink(movedCount);
+		}
+	}
+
+	private void insertSecureTransferIntoEmptySlots(ItemStack remainingStack) {
+		for (int slot = 0; slot < SAFE_SLOT_COUNT; slot++) {
+			if (remainingStack.isEmpty()) {
+				return;
+			}
+
+			ItemStack safeStack = this.items.get(slot);
+
+			if (!safeStack.isEmpty()) {
+				continue;
+			}
+
+			ItemStack insertedStack = remainingStack.copy();
+			insertedStack.setCount(Math.min(remainingStack.getMaxStackSize(), remainingStack.getCount()));
+
+			this.items.set(slot, insertedStack);
+			remainingStack.shrink(insertedStack.getCount());
+		}
+	}
+
+	// Secure transfer output. Only our owner-matched Vendor Machine code should call this.
+	public ItemStack extractMatchingForSecureTransfer(ItemStack templateStack, int maxCount) {
+		if (templateStack.isEmpty() || maxCount <= 0) {
+			return ItemStack.EMPTY;
+		}
+
+		ItemStack extractedStack = templateStack.copy();
+		extractedStack.setCount(0);
+
+		int remainingCount = maxCount;
+
+		for (int slot = 0; slot < SAFE_SLOT_COUNT; slot++) {
+			if (remainingCount <= 0) {
+				break;
+			}
+
+			ItemStack safeStack = this.items.get(slot);
+
+			if (safeStack.isEmpty()) {
+				continue;
+			}
+
+			if (!ItemStack.isSameItemSameComponents(safeStack, templateStack)) {
+				continue;
+			}
+
+			int movedCount = Math.min(remainingCount, safeStack.getCount());
+
+			extractedStack.grow(movedCount);
+			safeStack.shrink(movedCount);
+			remainingCount -= movedCount;
+
+			if (safeStack.isEmpty()) {
+				this.items.set(slot, ItemStack.EMPTY);
+			}
+		}
+
+		if (!extractedStack.isEmpty()) {
+			this.setChanged();
+		}
+
+		return extractedStack;
+	}
+
+	// Vanilla hopper access is intentionally disabled.
+	// All automated private logistics must go through owner-matched Vendor Machine transfers.
+	@Override
+	public int[] getSlotsForFace(Direction side) {
+		return VANILLA_HOPPER_NO_SLOTS;
+	}
+
+	@Override
+	public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction side) {
+		return false;
+	}
+
+	@Override
+	public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
+		return false;
+	}
+
 	@Override
 	public boolean stillValid(Player player) {
 		if (this.level == null) {
@@ -225,11 +363,14 @@ public class VendorSafeBlockEntity extends BlockEntity implements Container {
 
 	@Override
 	public void clearContent() {
+		this.clearItemsWithoutUpdate();
+		this.setChanged();
+	}
+
+	private void clearItemsWithoutUpdate() {
 		for (int slot = 0; slot < this.items.size(); slot++) {
 			this.items.set(slot, ItemStack.EMPTY);
 		}
-
-		this.setChanged();
 	}
 
 	public UUID getOwnerUuid() {

@@ -9,14 +9,11 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class VendorMachineSalesMenu extends AbstractContainerMenu {
-	// Checkout button ID encoding.
 	public static final int ID_CHECKOUT_BUTTON_BASE = 1000;
 	private static final int ID_CHECKOUT_QUANTITY_MULTIPLIER = 100;
 
-	// Base slot geometry.
 	private static final int SIZE_SLOT = 18;
 
-	// Hidden display container layout.
 	private static final int INDEX_STOCK_DISPLAY_START = 0;
 	private static final int INDEX_PRICE_DISPLAY_START = INDEX_STOCK_DISPLAY_START + VendorMachineBlockEntity.STOCK_SLOT_COUNT;
 	private static final int INDEX_VAULT_DISPLAY_START = INDEX_PRICE_DISPLAY_START + VendorMachineBlockEntity.PRICE_SLOT_COUNT;
@@ -26,28 +23,22 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 					+ VendorMachineBlockEntity.PRICE_SLOT_COUNT
 					+ VendorMachineBlockEntity.VAULT_SLOT_COUNT;
 
-	// Hidden slots are used only for client sync; they must not appear inside the GUI.
 	private static final int POS_HIDDEN_SLOT_X = -2000;
 	private static final int POS_HIDDEN_SLOT_Y = -2000;
 
-	// Payment input slot.
 	private static final int INDEX_PAYMENT_SLOT = 0;
 	private static final int POS_PAYMENT_SLOT_X = 98;
 	private static final int POS_PAYMENT_SLOT_Y = 70;
 
-	// Player inventory layout.
 	private static final int POS_PLAYER_INVENTORY_X = 8;
 	private static final int POS_PLAYER_INVENTORY_Y = 139;
 	private static final int POS_PLAYER_HOTBAR_Y = 197;
 
-	// Vanilla player inventory dimensions.
 	private static final int LAYOUT_PLAYER_INVENTORY_COLUMNS = 9;
 	private static final int LAYOUT_PLAYER_INVENTORY_ROWS = 3;
 	private static final int INDEX_PLAYER_HOTBAR_START = 0;
 	private static final int INDEX_PLAYER_MAIN_INVENTORY_START = 9;
 
-	// Menu slot index ranges.
-	// Registration order is: hidden display slots -> payment slot -> player main inventory -> player hotbar.
 	private static final int MENU_HIDDEN_DISPLAY_START = 0;
 	private static final int MENU_HIDDEN_DISPLAY_END = MENU_HIDDEN_DISPLAY_START + SIZE_DISPLAY_SLOT_COUNT;
 
@@ -88,7 +79,6 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 		this.addPlayerInventorySlots(playerInventory);
 	}
 
-	// Encodes selected product index and selected quantity into a single menu button ID.
 	public static int createCheckoutButtonId(int productIndex, int quantity) {
 		return ID_CHECKOUT_BUTTON_BASE + productIndex * ID_CHECKOUT_QUANTITY_MULTIPLIER + quantity;
 	}
@@ -103,12 +93,7 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 
 	@Override
 	public void broadcastChanges() {
-		// Sales GUI displays a hidden client-side snapshot of the vendor inventory.
-		// External changes, such as command block restock or hopper restock,
-		// modify the BlockEntity directly. Refresh the snapshot before every normal
-		// container sync cycle so the open GUI reflects the actual vendor state.
 		this.syncDisplayItemsFromVendor();
-
 		super.broadcastChanges();
 	}
 
@@ -245,7 +230,6 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 		return this.getVaultAcceptablePurchaseCount(paymentStack) > 0;
 	}
 
-	// Returns how many product units can currently be bought before the vault runs out of space for payment.
 	public int getVaultAcceptablePurchaseCount(ItemStack unitPaymentStack) {
 		if (unitPaymentStack.isEmpty()) {
 			return 0;
@@ -331,8 +315,6 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 		this.vendorMachineBlockEntity.setChanged();
 		this.vendorMachineBlockEntity.startTransactionPulse();
 
-		// Refresh immediately for the successful transaction itself.
-		// Later external restock from command blocks/hoppers will be caught by broadcastChanges().
 		this.syncDisplayItemsFromVendor();
 		this.broadcastChanges();
 
@@ -532,12 +514,10 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 		}
 
 		if (index == MENU_PAYMENT_SLOT) {
-			// Shift-click from payment slot returns the item to the player inventory.
 			if (!this.moveItemStackTo(sourceStack, MENU_PLAYER_INVENTORY_START, MENU_PLAYER_INVENTORY_END, true)) {
 				return ItemStack.EMPTY;
 			}
 		} else if (index >= MENU_PLAYER_INVENTORY_START && index < MENU_PLAYER_INVENTORY_END) {
-			// Shift-click from player inventory tries to place the item into the payment slot.
 			if (!this.moveItemStackTo(sourceStack, MENU_PAYMENT_START, MENU_PAYMENT_END, false)) {
 				return ItemStack.EMPTY;
 			}

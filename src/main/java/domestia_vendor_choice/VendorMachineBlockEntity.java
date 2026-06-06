@@ -50,10 +50,9 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 
 	public static final int INVENTORY_SIZE = STOCK_SLOT_COUNT + PRICE_SLOT_COUNT + VAULT_SLOT_COUNT;
 
-	// Hopper IO slot exposure.
-	private static final int[] HOPPER_STOCK_SLOTS = createSlotRange(STOCK_SLOT_START, STOCK_SLOT_COUNT);
-	private static final int[] HOPPER_VAULT_SLOTS = createSlotRange(VAULT_SLOT_START, VAULT_SLOT_COUNT);
-	private static final int[] HOPPER_NO_SLOTS = new int[0];
+	// Vanilla hopper exposure.
+	// Security rule: vanilla hoppers must never access private Vendor Machine storage.
+	private static final int[] VANILLA_HOPPER_NO_SLOTS = new int[0];
 
 	// Interaction constants.
 	private static final double STILL_VALID_MAX_DISTANCE_SQUARED = 64.0;
@@ -63,12 +62,18 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 	private static final int TICKS_TRANSACTION_PULSE_DURATION = 4;
 	private static final long TIME_NO_TRANSACTION_PULSE = 0L;
 
+	// Secure logistics constants.
+	private static final int TICKS_SECURE_TRANSFER_INTERVAL = 8;
+	private static final int COUNT_SECURE_TRANSFER_ITEMS_PER_CYCLE = 1;
+
 	private UUID ownerUuid;
 	private String ownerName = DEFAULT_OWNER_NAME;
 	private String displayName = DEFAULT_DISPLAY_NAME;
 
 	private boolean transactionPowered = false;
 	private long transactionPulseEndGameTime = TIME_NO_TRANSACTION_PULSE;
+
+	private int secureTransferCooldownTicks = 0;
 
 	// Runtime-only sales session state.
 	// This is not saved to NBT. It exists only while at least one Sales GUI is open.
@@ -81,14 +86,25 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 		super(ModBlockEntities.VENDOR_MACHINE, pos, state);
 	}
 
-	private static int[] createSlotRange(int firstSlot, int slotCount) {
-		int[] slots = new int[slotCount];
-
-		for (int index = 0; index < slotCount; index++) {
-			slots[index] = firstSlot + index;
+	public void serverTick() {
+		if (this.level == null || this.level.isClientSide()) {
+			return;
 		}
 
-		return slots;
+		if (!this.hasOwner()) {
+			return;
+		}
+
+		if (this.secureTransferCooldownTicks > 0) {
+			this.secureTransferCooldownTicks--;
+			return;
+		}
+
+		this.secureTransferCooldownTicks = TICKS_SECURE_TRANSFER_INTERVAL;
+
+		if (this.transferOneSecureLogisticsCycle()) {
+			this.setChanged();
+		}
 	}
 
 	@Override
@@ -107,17 +123,13 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 		this.loadOwner(input);
 		this.loadDisplayName(input);
 
-		// Important for client-side renderer synchronization:
-		// saved item lists usually omit empty slots. If we load over an old client-side
-		// inventory without clearing it first, removed stock items remain visible
-		// on the front panel.
 		this.clearItemsWithoutUpdate();
 
 		ContainerHelper.loadAllItems(input, this.items);
 
-		// Runtime-only states must never survive chunk reloads.
 		this.clearTransactionPulseRuntimeState();
 		this.clearSalesSessionRuntimeState();
+		this.secureTransferCooldownTicks = 0;
 	}
 
 	private void saveOwner(ValueOutput output) {
@@ -196,14 +208,9 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 
 	@Override
 	public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-		// Privacy rule:
-		// Do not call super here. The default BlockEntity behavior drops container contents.
-		// Vendor Machine must drop only the block item unless ModEvents explicitly drops contents for the owner.
 		this.clearContent();
 	}
 
-	// Starts a short redstone transaction pulse after a successful checkout.
-	// The signal is emitted from all utility faces: up, down, left, and right relative to block facing.
 	public void startTransactionPulse() {
 		if (!(this.level instanceof ServerLevel serverLevel)) {
 			return;
@@ -273,8 +280,6 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 			return;
 		}
 
-		// Notify the machine position and every output-side neighbor.
-		// Front and back are deliberately excluded: they are interactive UI faces.
 		this.level.updateNeighborsAt(this.worldPosition, vendorMachineBlock);
 
 		for (Direction direction : Direction.values()) {
@@ -286,10 +291,6 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 		}
 	}
 
-	// Sales session memory:
-	// while at least one Sales GUI is open, recently sold-out stock slots remember
-	// their product and can be refilled by hoppers. When the last Sales GUI closes,
-	// empty sold-out positions are forgotten.
 	public void registerSalesMenuOpened() {
 		if (this.openSalesMenuCount <= 0) {
 			this.openSalesMenuCount = 0;
@@ -369,8 +370,6 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 		}
 
 		if (stack.isEmpty()) {
-			// Manual/administrative clearing is a real product-position clear.
-			// Checkout sold-out clearing must use clearStockAfterSale() to preserve session memory.
 			this.activeStockTemplates.set(stockIndex, ItemStack.EMPTY);
 			return;
 		}
@@ -389,6 +388,150 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 		templateStack.setCount(1);
 
 		return templateStack;
+	}
+
+	private boolean transferOneSecureLogisticsCycle() {
+		boolean importedStock = this.importOneStockItemFromOwnerSafeAbove();
+		boolean exportedVault = this.exportOneVaultItemToOwnerSafeBelow();
+
+		return importedStock || exportedVault;
+	}
+
+	private boolean importOneStockItemFromOwnerSafeAbove() {
+		VendorSafeBlockEntity sourceSafe = this.getOwnerSafeAt(this.worldPosition.above());
+
+		if (sourceSafe == null) {
+			return false;
+		}
+
+		for (int stockIndex = 0; stockIndex < STOCK_SLOT_COUNT; stockIndex++) {
+			int stockSlot = STOCK_SLOT_START + stockIndex;
+			ItemStack stockStack = this.items.get(stockSlot);
+			ItemStack templateStack = this.getStockInputTemplate(stockIndex, stockStack);
+
+			if (templateStack.isEmpty()) {
+				continue;
+			}
+
+			if (this.getStockMissingCount(stockStack, templateStack) <= 0) {
+				continue;
+			}
+
+			ItemStack extractedStack = sourceSafe.extractMatchingForSecureTransfer(
+					templateStack,
+					COUNT_SECURE_TRANSFER_ITEMS_PER_CYCLE
+			);
+
+			if (extractedStack.isEmpty()) {
+				continue;
+			}
+
+			this.insertIntoStockSlot(stockSlot, stockIndex, extractedStack);
+			return true;
+		}
+
+		return false;
+	}
+
+	private ItemStack getStockInputTemplate(int stockIndex, ItemStack stockStack) {
+		if (!stockStack.isEmpty()) {
+			return createStockTemplate(stockStack);
+		}
+
+		if (stockIndex < 0 || stockIndex >= this.activeStockTemplates.size()) {
+			return ItemStack.EMPTY;
+		}
+
+		return this.activeStockTemplates.get(stockIndex);
+	}
+
+	private int getStockMissingCount(ItemStack stockStack, ItemStack templateStack) {
+		int maxStackSize = Math.min(templateStack.getMaxStackSize(), this.getMaxStackSize());
+
+		if (stockStack.isEmpty()) {
+			return maxStackSize;
+		}
+
+		if (!ItemStack.isSameItemSameComponents(stockStack, templateStack)) {
+			return 0;
+		}
+
+		return Math.max(0, maxStackSize - stockStack.getCount());
+	}
+
+	private void insertIntoStockSlot(int stockSlot, int stockIndex, ItemStack insertedStack) {
+		if (insertedStack.isEmpty()) {
+			return;
+		}
+
+		ItemStack stockStack = this.items.get(stockSlot);
+
+		if (stockStack.isEmpty()) {
+			ItemStack newStockStack = insertedStack.copy();
+			this.items.set(stockSlot, newStockStack);
+
+			if (this.openSalesMenuCount > 0) {
+				this.activeStockTemplates.set(stockIndex, createStockTemplate(newStockStack));
+			}
+
+			return;
+		}
+
+		stockStack.grow(insertedStack.getCount());
+	}
+
+	private boolean exportOneVaultItemToOwnerSafeBelow() {
+		VendorSafeBlockEntity targetSafe = this.getOwnerSafeAt(this.worldPosition.below());
+
+		if (targetSafe == null) {
+			return false;
+		}
+
+		for (int index = 0; index < VAULT_SLOT_COUNT; index++) {
+			int vaultSlot = VAULT_SLOT_START + index;
+			ItemStack vaultStack = this.items.get(vaultSlot);
+
+			if (vaultStack.isEmpty()) {
+				continue;
+			}
+
+			ItemStack transferStack = vaultStack.copy();
+			transferStack.setCount(COUNT_SECURE_TRANSFER_ITEMS_PER_CYCLE);
+
+			ItemStack remainingStack = targetSafe.insertForSecureTransfer(transferStack);
+
+			if (!remainingStack.isEmpty()) {
+				continue;
+			}
+
+			vaultStack.shrink(COUNT_SECURE_TRANSFER_ITEMS_PER_CYCLE);
+
+			if (vaultStack.isEmpty()) {
+				this.items.set(vaultSlot, ItemStack.EMPTY);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private VendorSafeBlockEntity getOwnerSafeAt(BlockPos pos) {
+		if (this.level == null || this.ownerUuid == null) {
+			return null;
+		}
+
+		BlockEntity blockEntity = this.level.getBlockEntity(pos);
+
+		if (!(blockEntity instanceof VendorSafeBlockEntity vendorSafeBlockEntity)) {
+			return null;
+		}
+
+		if (!vendorSafeBlockEntity.isOwner(this.ownerUuid)) {
+			return null;
+		}
+
+		return vendorSafeBlockEntity;
 	}
 
 	@Override
@@ -439,9 +582,6 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 	public ItemStack removeItemNoUpdate(int slot) {
 		ItemStack removedStack = ContainerHelper.takeItem(this.items, slot);
 
-		// Important:
-		// despite the vanilla method name, this container must notify clients when a stack is removed.
-		// Otherwise the front renderer keeps drawing the old stock item.
 		if (!removedStack.isEmpty()) {
 			if (this.isStockSlot(slot)) {
 				this.handleStockSlotDirectSet(slot, ItemStack.EMPTY);
@@ -468,112 +608,23 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 		this.setChanged();
 	}
 
-	// Hopper IO:
-	// - Top and viewer-right sides can refill existing Stock positions only.
-	// - Bottom side can drain Vault only.
-	// - Price slots are never exposed.
-	// - Empty Stock slots reject hopper insertion unless the current Sales session remembers this product.
 	@Override
 	public int[] getSlotsForFace(Direction side) {
-		if (this.isStockHopperInputSide(side)) {
-			return HOPPER_STOCK_SLOTS;
-		}
-
-		if (this.isVaultHopperOutputSide(side)) {
-			return HOPPER_VAULT_SLOTS;
-		}
-
-		return HOPPER_NO_SLOTS;
+		return VANILLA_HOPPER_NO_SLOTS;
 	}
 
 	@Override
 	public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction side) {
-		if (!this.isStockHopperInputSide(side)) {
-			return false;
-		}
-
-		if (!this.isStockSlot(slot)) {
-			return false;
-		}
-
-		return this.canHopperRefillStockSlot(slot, stack);
+		return false;
 	}
 
 	@Override
 	public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
-		return this.isVaultHopperOutputSide(side) && this.isVaultSlot(slot);
-	}
-
-	private boolean canHopperRefillStockSlot(int slot, ItemStack insertedStack) {
-		if (insertedStack.isEmpty()) {
-			return false;
-		}
-
-		ItemStack stockStack = this.items.get(slot);
-
-		if (!stockStack.isEmpty()) {
-			return this.canHopperMergeIntoExistingStock(stockStack, insertedStack);
-		}
-
-		return this.canHopperRestoreSoldOutStock(slot, insertedStack);
-	}
-
-	private boolean canHopperMergeIntoExistingStock(ItemStack stockStack, ItemStack insertedStack) {
-		if (!ItemStack.isSameItemSameComponents(stockStack, insertedStack)) {
-			return false;
-		}
-
-		return stockStack.getCount() < Math.min(stockStack.getMaxStackSize(), this.getMaxStackSize());
-	}
-
-	private boolean canHopperRestoreSoldOutStock(int slot, ItemStack insertedStack) {
-		int stockIndex = slot - STOCK_SLOT_START;
-
-		if (stockIndex < 0 || stockIndex >= STOCK_SLOT_COUNT) {
-			return false;
-		}
-
-		ItemStack templateStack = this.activeStockTemplates.get(stockIndex);
-
-		if (templateStack.isEmpty()) {
-			return false;
-		}
-
-		return ItemStack.isSameItemSameComponents(templateStack, insertedStack);
-	}
-
-	private boolean isStockHopperInputSide(Direction side) {
-		if (side == Direction.UP) {
-			return true;
-		}
-
-		return side == this.getViewerRightSide();
-	}
-
-	private boolean isVaultHopperOutputSide(Direction side) {
-		return side == Direction.DOWN;
-	}
-
-	private Direction getViewerRightSide() {
-		return this.getFrontSide().getCounterClockWise();
-	}
-
-	private Direction getFrontSide() {
-		BlockState state = this.getBlockState();
-
-		if (state.hasProperty(VendorMachineBlock.FACING)) {
-			return state.getValue(VendorMachineBlock.FACING);
-		}
-
-		return Direction.NORTH;
+		return false;
 	}
 
 	private boolean isStockSlot(int slot) {
 		return slot >= STOCK_SLOT_START && slot < STOCK_SLOT_START + STOCK_SLOT_COUNT;
-	}
-
-	private boolean isVaultSlot(int slot) {
-		return slot >= VAULT_SLOT_START && slot < VAULT_SLOT_START + VAULT_SLOT_COUNT;
 	}
 
 	@Override
@@ -675,8 +726,6 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 		return this.ownerUuid != null && this.ownerUuid.equals(playerUuid);
 	}
 
-	// Management means opening the rear Control interface.
-	// Only the owner can configure the machine.
 	public boolean canManage(Player player) {
 		if (!this.isOwner(player.getUUID())) {
 			return false;
@@ -686,8 +735,6 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 		return true;
 	}
 
-	// Breaking is administrative recovery.
-	// The owner can break the machine, and operators can destroy it if needed.
 	public boolean canBreak(Player player) {
 		if (this.isOwner(player.getUUID())) {
 			this.updateOwnerNameFromPlayerIfNeeded(player);
