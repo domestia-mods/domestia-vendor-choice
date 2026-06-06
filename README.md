@@ -5,7 +5,6 @@
 </p>
 
 <h3 align="center">
-  Owner-aware trading, storage, and logistics tools for Minecraft multiplayer survival worlds.<br>
   <a href="https://github.com/domestia-mods/domestia-vendor-choice/releases">
     <img src="https://img.shields.io/badge/status-beta-yellowgreen" alt="Status">
   </a>
