@@ -47,3 +47,10 @@ desktop.ini
 *.bak
 *.swp
 *~
+
+# backups
+*.zip
+
+# Local Git helper scripts
+git-push.bat
+git-sync-push.bat
