@@ -6,7 +6,7 @@
 
 <h3 align="center">
   <a href="https://github.com/domestia-mods/domestia-vendor-choice/releases">
-    <img src="https://img.shields.io/badge/status-beta-yellowgreen" alt="Status">
+    <img src="https://img.shields.io/badge/status-release-brightgreen" alt="Status">
   </a>
   <img src="https://img.shields.io/badge/Minecraft-1.21.x-brightgreen" alt="Minecraft">
   <img src="https://img.shields.io/badge/Loader-Fabric-blue" alt="Fabric">
