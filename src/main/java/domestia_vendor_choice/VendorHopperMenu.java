@@ -14,14 +14,15 @@ public class VendorHopperMenu extends AbstractContainerMenu {
 	// Base slot geometry.
 	private static final int SIZE_SLOT = 18;
 
-	// Vendor Hopper inventory layout.
-	private static final int POS_HOPPER_INVENTORY_X = 44;
-	private static final int POS_HOPPER_INVENTORY_Y = 20;
+	// Vendor Hopper control layout.
+	private static final int POS_FILTER_SLOTS_X = 62;
+	private static final int POS_FILTER_SLOTS_Y = 30;
+	private static final int POS_BUFFER_SLOTS_Y = 58;
 
 	// Player inventory layout.
 	private static final int POS_PLAYER_INVENTORY_X = 8;
-	private static final int POS_PLAYER_INVENTORY_Y = 51;
-	private static final int POS_PLAYER_HOTBAR_Y = 109;
+	private static final int POS_PLAYER_INVENTORY_Y = 85;
+	private static final int POS_PLAYER_HOTBAR_Y = 143;
 
 	// Vanilla player inventory dimensions.
 	private static final int LAYOUT_PLAYER_INVENTORY_COLUMNS = 9;
@@ -30,11 +31,14 @@ public class VendorHopperMenu extends AbstractContainerMenu {
 	private static final int INDEX_PLAYER_MAIN_INVENTORY_START = 9;
 
 	// Menu slot index ranges.
-	// Registration order is: Vendor Hopper inventory -> Player main inventory -> Player hotbar.
-	private static final int MENU_HOPPER_START = 0;
-	private static final int MENU_HOPPER_END = MENU_HOPPER_START + VendorHopperBlockEntity.HOPPER_SLOT_COUNT;
+	// Registration order is: Template slots -> Buffer slots -> Player main inventory -> Player hotbar.
+	private static final int MENU_TEMPLATE_START = 0;
+	private static final int MENU_TEMPLATE_END = MENU_TEMPLATE_START + VendorHopperBlockEntity.TEMPLATE_SLOT_COUNT;
 
-	private static final int MENU_PLAYER_MAIN_START = MENU_HOPPER_END;
+	private static final int MENU_BUFFER_START = MENU_TEMPLATE_END;
+	private static final int MENU_BUFFER_END = MENU_BUFFER_START + VendorHopperBlockEntity.BUFFER_SLOT_COUNT;
+
+	private static final int MENU_PLAYER_MAIN_START = MENU_BUFFER_END;
 	private static final int MENU_PLAYER_MAIN_END = MENU_PLAYER_MAIN_START + LAYOUT_PLAYER_INVENTORY_COLUMNS * LAYOUT_PLAYER_INVENTORY_ROWS;
 
 	private static final int MENU_PLAYER_HOTBAR_START = MENU_PLAYER_MAIN_END;
@@ -61,17 +65,29 @@ public class VendorHopperMenu extends AbstractContainerMenu {
 			hopperInventory = new SimpleContainer(VendorHopperBlockEntity.HOPPER_SLOT_COUNT);
 		}
 
-		this.addVendorHopperSlots(hopperInventory);
+		this.addVendorHopperTemplateSlots(hopperInventory);
+		this.addVendorHopperBufferSlots(hopperInventory);
 		this.addPlayerInventorySlots(playerInventory);
 	}
 
-	private void addVendorHopperSlots(final @NotNull Container hopperInventory) {
-		for (int slot = 0; slot < VendorHopperBlockEntity.HOPPER_SLOT_COUNT; slot++) {
+	private void addVendorHopperTemplateSlots(final @NotNull Container hopperInventory) {
+		for (int slot = 0; slot < VendorHopperBlockEntity.TEMPLATE_SLOT_COUNT; slot++) {
+			this.addSlot(new TemplateSlot(
+					hopperInventory,
+					VendorHopperBlockEntity.TEMPLATE_SLOT_START + slot,
+					POS_FILTER_SLOTS_X + slot * SIZE_SLOT,
+					POS_FILTER_SLOTS_Y
+			));
+		}
+	}
+
+	private void addVendorHopperBufferSlots(final @NotNull Container hopperInventory) {
+		for (int slot = 0; slot < VendorHopperBlockEntity.BUFFER_SLOT_COUNT; slot++) {
 			this.addSlot(new Slot(
 					hopperInventory,
-					slot,
-					POS_HOPPER_INVENTORY_X + slot * SIZE_SLOT,
-					POS_HOPPER_INVENTORY_Y
+					VendorHopperBlockEntity.BUFFER_SLOT_START + slot,
+					POS_FILTER_SLOTS_X + slot * SIZE_SLOT,
+					POS_BUFFER_SLOTS_Y
 			));
 		}
 	}
@@ -114,7 +130,7 @@ public class VendorHopperMenu extends AbstractContainerMenu {
 
 	@Override
 	public ItemStack quickMoveStack(final Player player, final int index) {
-		final Slot sourceSlot = this.slots.get(index);
+		final Slot sourceSlot = slots.get(index);
 
 		if (!sourceSlot.hasItem()) {
 			return ItemStack.EMPTY;
@@ -123,12 +139,14 @@ public class VendorHopperMenu extends AbstractContainerMenu {
 		final ItemStack sourceStack = sourceSlot.getItem();
 		final ItemStack originalStack = sourceStack.copy();
 
-		if (index >= MENU_HOPPER_START && index < MENU_HOPPER_END) {
-			if (!this.moveItemStackTo(sourceStack, MENU_PLAYER_INVENTORY_START, MENU_PLAYER_INVENTORY_END, true)) {
+		if (index >= MENU_TEMPLATE_START && index < MENU_BUFFER_END) {
+			if (!moveItemStackTo(sourceStack, MENU_PLAYER_INVENTORY_START, MENU_PLAYER_INVENTORY_END, true)) {
 				return ItemStack.EMPTY;
 			}
 		} else if (index >= MENU_PLAYER_INVENTORY_START && index < MENU_PLAYER_INVENTORY_END) {
-			if (!this.moveItemStackTo(sourceStack, MENU_HOPPER_START, MENU_HOPPER_END, false)) {
+			// Shift-click from player inventory feeds only Buffer slots.
+			// Template slots are owner-managed manually to avoid accidental filter changes.
+			if (!moveItemStackTo(sourceStack, MENU_BUFFER_START, MENU_BUFFER_END, false)) {
 				return ItemStack.EMPTY;
 			}
 		} else {
@@ -153,5 +171,21 @@ public class VendorHopperMenu extends AbstractContainerMenu {
 	@Override
 	public boolean stillValid(final Player player) {
 		return this.vendorHopperBlockEntity == null || this.vendorHopperBlockEntity.stillValid(player);
+	}
+
+	private static class TemplateSlot extends Slot {
+		public TemplateSlot(Container container, int slot, int x, int y) {
+			super(container, slot, x, y);
+		}
+
+		@Override
+		public int getMaxStackSize() {
+			return 1;
+		}
+
+		@Override
+		public int getMaxStackSize(ItemStack stack) {
+			return 1;
+		}
 	}
 }

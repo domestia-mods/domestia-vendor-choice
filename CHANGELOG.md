@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased
+## Released
 
-## 1.2.1-beta
+## 1.2.2
 
 ### Added
 
@@ -10,10 +10,15 @@
 - Vendor Hopper supports private access rules consistent with Vendor Machine and Vendor Safe.
 - Vendor Hopper can interact with Vendor Machine, Vendor Safe, and other Vendor Hoppers when ownership matches.
 - Vendor Hopper can also work with regular vanilla containers, allowing players to intentionally route items into ordinary storage.
+- Vendor Hopper can now collect dropped items from the world using vanilla-like hopper pickup behavior.
+- Vendor Hopper can now receive input from hopper minecarts and vanilla hoppers while still preventing extraction by them.
+- Vendor Hopper now includes Template slots for simple item filtering and Buffer slots for active item transfer.
 
 ### Changed
 
 - Vendor Machine, Vendor Safe, and Vendor Hopper logistics now use protected owner-aware rules when interacting with Vendor blocks.
+- Vendor Hopper input now routes items through Template and Buffer rules before accepting them.
+- Vendor Hopper output now uses Buffer slots only; Template items are never transferred by logistics.
 - Vendor Safe recipe has been updated.
 - Vendor Machine recipe has been updated to include Vendor Hopper and Vendor Safe components.
 - Vendor Hopper recipe follows the vanilla hopper pattern, using Vendor Safe as the protected storage component.
@@ -22,8 +27,10 @@
 
 - Vendor Hopper no longer blocks chest interaction when placed above a chest.
 - Vendor Hopper item now renders as a normal flat inventory item instead of a large held block model.
-- Vendor Hopper cannot be accessed by vanilla hoppers.
+- Vendor Hopper cannot be extracted from by vanilla hoppers or hopper minecarts.
+- Vendor Hopper no longer outputs into vanilla hoppers.
 - Vendor Hopper interaction with Vendor Machine now respects stock, price, and vault boundaries.
+- Vendor Hopper template items are no longer exposed to automated transfer.
 
 ## 1.1.4-beta
 

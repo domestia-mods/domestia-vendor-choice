@@ -15,13 +15,17 @@ import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.AABB;
 
 import java.util.UUID;
 
@@ -37,12 +41,19 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 	// Fallback text for legacy blocks that have OwnerUuid but no stored owner name.
 	public static final String DEFAULT_OWNER_NAME = "Owner";
 
-	// Hopper inventory layout. Vanilla hopper capacity.
-	public static final int HOPPER_SLOT_COUNT = 5;
+	// Hopper inventory layout.
+	// Buffer slots are the working hopper inventory. Template slots are owner-managed filters.
+	public static final int BUFFER_SLOT_START = 0;
+	public static final int BUFFER_SLOT_COUNT = 5;
+
+	public static final int TEMPLATE_SLOT_START = BUFFER_SLOT_START + BUFFER_SLOT_COUNT;
+	public static final int TEMPLATE_SLOT_COUNT = 5;
+
+	public static final int HOPPER_SLOT_COUNT = BUFFER_SLOT_COUNT + TEMPLATE_SLOT_COUNT;
 
 	// Vanilla hopper exposure.
-	// Security rule: vanilla hoppers must never siphon private Vendor Hopper storage.
-	private static final int[] VANILLA_HOPPER_NO_SLOTS = new int[0];
+	// Vanilla hoppers may feed items into Vendor Hopper buffer slots, but they must never siphon private storage.
+	private static final int[] VANILLA_HOPPER_INSERT_SLOTS = createSlotRange(BUFFER_SLOT_START, BUFFER_SLOT_COUNT);
 
 	// Interaction constants.
 	private static final double STILL_VALID_MAX_DISTANCE_SQUARED = 64.0;
@@ -62,6 +73,16 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 
 	public VendorHopperBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.VENDOR_HOPPER, pos, state);
+	}
+
+	private static int[] createSlotRange(int firstSlot, int slotCount) {
+		int[] slots = new int[slotCount];
+
+		for (int index = 0; index < slotCount; index++) {
+			slots[index] = firstSlot + index;
+		}
+
+		return slots;
 	}
 
 	public void serverTick() {
@@ -103,6 +124,7 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 
 		this.clearItemsWithoutUpdate();
 		ContainerHelper.loadAllItems(input, this.items);
+		this.normalizeTemplateSlotCounts();
 
 		this.transferCooldownTicks = 0;
 	}
@@ -191,12 +213,24 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 
 	private boolean transferOneCycle() {
 		// Push first to free internal space, then pull if nothing was pushed.
-		// This mirrors the practical behavior players expect from a hopper chain.
+		// After block-container pull, collect container entities and dropped items from the vanilla-like pickup area.
 		if (this.pushOneItemToOutput()) {
 			return true;
 		}
 
-		return this.pullOneItemFromAbove();
+		if (this.pullOneItemFromAbove()) {
+			return true;
+		}
+
+		if (this.hasSourceContainerBlockAbove()) {
+			return false;
+		}
+
+		if (this.pullOneItemFromContainerEntityAbove()) {
+			return true;
+		}
+
+		return this.pickUpDroppedItemFromAbove();
 	}
 
 	private boolean pushOneItemToOutput() {
@@ -207,6 +241,12 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 		}
 
 		BlockPos targetPos = this.worldPosition.relative(outputDirection);
+
+		// Vanilla hoppers are allowed to feed Vendor Hopper, but Vendor Hopper must not feed vanilla hoppers.
+		if (this.isVanillaHopperBlockAt(targetPos)) {
+			return false;
+		}
+
 		BlockEntity targetBlockEntity = this.level.getBlockEntity(targetPos);
 
 		if (!(targetBlockEntity instanceof Container targetContainer)) {
@@ -215,7 +255,7 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 
 		Direction targetSide = outputDirection.getOpposite();
 
-		for (int sourceSlot = 0; sourceSlot < HOPPER_SLOT_COUNT; sourceSlot++) {
+		for (int sourceSlot = BUFFER_SLOT_START; sourceSlot < BUFFER_SLOT_START + BUFFER_SLOT_COUNT; sourceSlot++) {
 			ItemStack sourceStack = this.items.get(sourceSlot);
 
 			if (sourceStack.isEmpty()) {
@@ -277,6 +317,69 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 		return true;
 	}
 
+	private boolean hasSourceContainerBlockAbove() {
+		BlockEntity sourceBlockEntity = this.level.getBlockEntity(this.worldPosition.above());
+		return sourceBlockEntity instanceof Container;
+	}
+
+	private boolean pullOneItemFromContainerEntityAbove() {
+		if (!this.hasAnyFreeInternalSpace()) {
+			return false;
+		}
+
+		for (Entity entity : this.level.getEntitiesOfClass(Entity.class, this.getPickupArea(), entity -> entity instanceof Container)) {
+			if (!(entity instanceof Container sourceContainer)) {
+				continue;
+			}
+
+			ItemStack extractedStack = this.extractFromGenericContainer(sourceContainer, COUNT_TRANSFER_ITEMS_PER_CYCLE);
+
+			if (extractedStack.isEmpty()) {
+				continue;
+			}
+
+			ItemStack remainingStack = this.insertIntoInternalInventory(extractedStack);
+
+			if (!remainingStack.isEmpty()) {
+				this.insertIntoGenericContainer(sourceContainer, remainingStack);
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean pickUpDroppedItemFromAbove() {
+		if (!this.hasAnyFreeInternalSpace()) {
+			return false;
+		}
+
+		for (ItemEntity itemEntity : this.level.getEntitiesOfClass(ItemEntity.class, this.getPickupArea(), itemEntity -> !itemEntity.getItem().isEmpty())) {
+			ItemStack itemStack = itemEntity.getItem();
+			ItemStack remainingStack = this.insertIntoInternalInventory(itemStack);
+
+			if (remainingStack.getCount() == itemStack.getCount()) {
+				continue;
+			}
+
+			if (remainingStack.isEmpty()) {
+				itemEntity.discard();
+			} else {
+				itemEntity.setItem(remainingStack);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private AABB getPickupArea() {
+		return new AABB(this.worldPosition.above());
+	}
+
 	private ItemStack insertIntoTargetContainer(
 			BlockEntity targetBlockEntity,
 			Container targetContainer,
@@ -289,6 +392,10 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 
 		if (!this.canAccessTargetContainer(targetBlockEntity)) {
 			return sourceStack;
+		}
+
+		if (targetBlockEntity instanceof VendorHopperBlockEntity vendorHopperBlockEntity) {
+			return vendorHopperBlockEntity.insertForSecureTransfer(sourceStack);
 		}
 
 		if (targetBlockEntity instanceof VendorMachineBlockEntity vendorMachineBlockEntity) {
@@ -359,6 +466,36 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 		return remainingStack;
 	}
 
+	private ItemStack insertIntoGenericContainer(Container container, ItemStack sourceStack) {
+		ItemStack remainingStack = sourceStack.copy();
+
+		for (int slot = 0; slot < container.getContainerSize(); slot++) {
+			if (remainingStack.isEmpty()) {
+				break;
+			}
+
+			remainingStack = this.insertIntoContainerSlot(container, slot, remainingStack);
+		}
+
+		if (remainingStack.getCount() != sourceStack.getCount()) {
+			container.setChanged();
+		}
+
+		return remainingStack;
+	}
+
+	private ItemStack extractFromGenericContainer(Container container, int maxCount) {
+		for (int slot = 0; slot < container.getContainerSize(); slot++) {
+			ItemStack extractedStack = this.extractFromContainerSlot(container, null, slot, Direction.DOWN, maxCount);
+
+			if (!extractedStack.isEmpty()) {
+				return extractedStack;
+			}
+		}
+
+		return ItemStack.EMPTY;
+	}
+
 	private ItemStack extractFromSourceContainer(
 			BlockEntity sourceBlockEntity,
 			Container sourceContainer,
@@ -367,6 +504,10 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 	) {
 		if (!this.canAccessSourceContainer(sourceBlockEntity)) {
 			return ItemStack.EMPTY;
+		}
+
+		if (sourceBlockEntity instanceof VendorHopperBlockEntity vendorHopperBlockEntity) {
+			return vendorHopperBlockEntity.extractBufferForSecureTransfer(maxCount);
 		}
 
 		if (sourceBlockEntity instanceof VendorMachineBlockEntity vendorMachineBlockEntity) {
@@ -427,16 +568,27 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 		return extractedStack;
 	}
 
+	public ItemStack insertForSecureTransfer(ItemStack sourceStack) {
+		return this.insertIntoInternalInventory(sourceStack);
+	}
+
+	public ItemStack extractBufferForSecureTransfer(int maxCount) {
+		for (int slot = BUFFER_SLOT_START; slot < BUFFER_SLOT_START + BUFFER_SLOT_COUNT; slot++) {
+			ItemStack extractedStack = this.extractFromContainerSlot(this, null, slot, Direction.DOWN, maxCount);
+
+			if (!extractedStack.isEmpty()) {
+				return extractedStack;
+			}
+		}
+
+		return ItemStack.EMPTY;
+	}
+
 	private ItemStack insertIntoInternalInventory(ItemStack sourceStack) {
 		ItemStack remainingStack = sourceStack.copy();
 
-		for (int slot = 0; slot < HOPPER_SLOT_COUNT; slot++) {
-			if (remainingStack.isEmpty()) {
-				break;
-			}
-
-			remainingStack = this.insertIntoContainerSlot(this, slot, remainingStack);
-		}
+		this.insertIntoMatchingTemplateBuffers(remainingStack);
+		this.insertIntoUnfilteredBuffers(remainingStack);
 
 		if (remainingStack.getCount() != sourceStack.getCount()) {
 			this.setChanged();
@@ -445,8 +597,105 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 		return remainingStack;
 	}
 
+	private void insertIntoMatchingTemplateBuffers(ItemStack remainingStack) {
+		for (int templateIndex = 0; templateIndex < TEMPLATE_SLOT_COUNT; templateIndex++) {
+			if (remainingStack.isEmpty()) {
+				return;
+			}
+
+			int templateSlot = TEMPLATE_SLOT_START + templateIndex;
+			ItemStack templateStack = this.items.get(templateSlot);
+
+			if (templateStack.isEmpty()) {
+				continue;
+			}
+
+			if (!ItemStack.isSameItemSameComponents(templateStack, remainingStack)) {
+				continue;
+			}
+
+			int bufferSlot = BUFFER_SLOT_START + templateIndex;
+			this.insertIntoBufferSlot(bufferSlot, remainingStack);
+		}
+	}
+
+	private void insertIntoUnfilteredBuffers(ItemStack remainingStack) {
+		for (int templateIndex = 0; templateIndex < TEMPLATE_SLOT_COUNT; templateIndex++) {
+			if (remainingStack.isEmpty()) {
+				return;
+			}
+
+			int templateSlot = TEMPLATE_SLOT_START + templateIndex;
+			ItemStack templateStack = this.items.get(templateSlot);
+
+			if (!templateStack.isEmpty()) {
+				continue;
+			}
+
+			int bufferSlot = BUFFER_SLOT_START + templateIndex;
+			this.insertIntoBufferSlot(bufferSlot, remainingStack);
+		}
+	}
+
+	private void insertIntoBufferSlot(int bufferSlot, ItemStack remainingStack) {
+		if (!this.canInsertIntoBufferSlot(bufferSlot, remainingStack)) {
+			return;
+		}
+
+		ItemStack bufferStack = this.items.get(bufferSlot);
+
+		if (bufferStack.isEmpty()) {
+			ItemStack insertedStack = remainingStack.copy();
+			insertedStack.setCount(Math.min(remainingStack.getMaxStackSize(), remainingStack.getCount()));
+
+			this.items.set(bufferSlot, insertedStack);
+			remainingStack.shrink(insertedStack.getCount());
+			return;
+		}
+
+		if (!ItemStack.isSameItemSameComponents(bufferStack, remainingStack)) {
+			return;
+		}
+
+		int freeSpace = Math.min(bufferStack.getMaxStackSize(), this.getMaxStackSize()) - bufferStack.getCount();
+
+		if (freeSpace <= 0) {
+			return;
+		}
+
+		int insertedCount = Math.min(freeSpace, remainingStack.getCount());
+
+		bufferStack.grow(insertedCount);
+		remainingStack.shrink(insertedCount);
+	}
+
+	private boolean canInsertIntoBufferSlot(int bufferSlot, ItemStack stack) {
+		if (!this.isBufferSlot(bufferSlot) || stack.isEmpty()) {
+			return false;
+		}
+
+		int templateSlot = TEMPLATE_SLOT_START + (bufferSlot - BUFFER_SLOT_START);
+		ItemStack templateStack = this.items.get(templateSlot);
+
+		if (!templateStack.isEmpty() && !ItemStack.isSameItemSameComponents(templateStack, stack)) {
+			return false;
+		}
+
+		ItemStack bufferStack = this.items.get(bufferSlot);
+
+		if (bufferStack.isEmpty()) {
+			return true;
+		}
+
+		if (!ItemStack.isSameItemSameComponents(bufferStack, stack)) {
+			return false;
+		}
+
+		return bufferStack.getCount() < Math.min(bufferStack.getMaxStackSize(), this.getMaxStackSize());
+	}
+
 	private boolean hasAnyFreeInternalSpace() {
-		for (int slot = 0; slot < HOPPER_SLOT_COUNT; slot++) {
+		for (int slot = BUFFER_SLOT_START; slot < BUFFER_SLOT_START + BUFFER_SLOT_COUNT; slot++) {
 			ItemStack stack = this.items.get(slot);
 
 			if (stack.isEmpty()) {
@@ -501,6 +750,10 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 		}
 
 		return false;
+	}
+
+	private boolean isVanillaHopperBlockAt(BlockPos pos) {
+		return this.level != null && this.level.getBlockState(pos).is(Blocks.HOPPER);
 	}
 
 	private Direction getOutputDirection() {
@@ -558,30 +811,58 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 
 	@Override
 	public void setItem(int slot, ItemStack stack) {
-		this.items.set(slot, stack);
-
-		if (stack.getCount() > this.getMaxStackSize()) {
+		if (this.isTemplateSlot(slot) && stack.getCount() > 1) {
+			stack.setCount(1);
+		} else if (stack.getCount() > this.getMaxStackSize()) {
 			stack.setCount(this.getMaxStackSize());
 		}
 
+		this.items.set(slot, stack);
 		this.setChanged();
 	}
 
-	// Vanilla hopper access is intentionally disabled.
-	// Vendor Hopper performs its own owner-aware pull/push logic instead.
+	@Override
+	public boolean canPlaceItem(int slot, ItemStack stack) {
+		if (this.isTemplateSlot(slot)) {
+			return true;
+		}
+
+		return this.canInsertIntoBufferSlot(slot, stack);
+	}
+
+	// Vanilla hoppers may insert into Vendor Hopper as one-way feeder input.
+	// They must never extract from Vendor Hopper, so private logistics cannot be siphoned.
 	@Override
 	public int[] getSlotsForFace(Direction side) {
-		return VANILLA_HOPPER_NO_SLOTS;
+		return VANILLA_HOPPER_INSERT_SLOTS;
 	}
 
 	@Override
 	public boolean canPlaceItemThroughFace(int slot, ItemStack stack, Direction side) {
-		return false;
+		return this.canInsertIntoBufferSlot(slot, stack);
 	}
 
 	@Override
 	public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction side) {
 		return false;
+	}
+
+	private boolean isBufferSlot(int slot) {
+		return slot >= BUFFER_SLOT_START && slot < BUFFER_SLOT_START + BUFFER_SLOT_COUNT;
+	}
+
+	private boolean isTemplateSlot(int slot) {
+		return slot >= TEMPLATE_SLOT_START && slot < TEMPLATE_SLOT_START + TEMPLATE_SLOT_COUNT;
+	}
+
+	private void normalizeTemplateSlotCounts() {
+		for (int slot = TEMPLATE_SLOT_START; slot < TEMPLATE_SLOT_START + TEMPLATE_SLOT_COUNT; slot++) {
+			ItemStack stack = this.items.get(slot);
+
+			if (!stack.isEmpty() && stack.getCount() > 1) {
+				stack.setCount(1);
+			}
+		}
 	}
 
 	@Override
