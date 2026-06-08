@@ -79,7 +79,7 @@ For exact version changes, see:
 
 Beta.
 
-This mod is currently tested on the Domestia server. Behavior, recipes, textures, and documentation may continue to change while the mod evolves.
+This mod is released and playable, but it is still being tested and balanced on the Domestia server. Recipes, block behavior, and documentation may continue to change as gameplay balance is refined.
 
 ## Support
 
