@@ -8,7 +8,7 @@
   "key": {
     "G": "minecraft:glass",
     "E": "minecraft:emerald_block",
-    "C": "minecraft:chest",
+    "C": "domestia_vendor_choice:vendor_safe",
     "T": "minecraft:redstone_torch",
     "I": "minecraft:iron_block",
     "S": "minecraft:lever"
