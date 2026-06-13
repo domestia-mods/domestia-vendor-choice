@@ -2,6 +2,16 @@
 
 ## Released
 
+## 1.2.3
+
+### Added
+
+- Added downward template diversion for Vendor Hopper output, enabling simple sorting-bus layouts with a Vendor Hopper placed directly below another Vendor Hopper.
+
+### Fixed
+
+- Fixed a minor Vendor Machine recipe issue.
+
 ## 1.2.2
 
 ### Added
