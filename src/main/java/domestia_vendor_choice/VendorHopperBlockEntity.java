@@ -241,16 +241,17 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 		}
 
 		BlockPos targetPos = this.worldPosition.relative(outputDirection);
+		BlockEntity targetBlockEntity = null;
+		Container targetContainer = null;
 
 		// Vanilla hoppers are allowed to feed Vendor Hopper, but Vendor Hopper must not feed vanilla hoppers.
-		if (this.isVanillaHopperBlockAt(targetPos)) {
-			return false;
-		}
+		if (!this.isVanillaHopperBlockAt(targetPos)) {
+			BlockEntity candidateBlockEntity = this.level.getBlockEntity(targetPos);
 
-		BlockEntity targetBlockEntity = this.level.getBlockEntity(targetPos);
-
-		if (!(targetBlockEntity instanceof Container targetContainer)) {
-			return false;
+			if (candidateBlockEntity instanceof Container candidateContainer) {
+				targetBlockEntity = candidateBlockEntity;
+				targetContainer = candidateContainer;
+			}
 		}
 
 		Direction targetSide = outputDirection.getOpposite();
@@ -259,6 +260,18 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 			ItemStack sourceStack = this.items.get(sourceSlot);
 
 			if (sourceStack.isEmpty()) {
+				continue;
+			}
+
+			if (this.tryDivertOneItemDownwardByTemplate(sourceStack)) {
+				if (sourceStack.isEmpty()) {
+					this.items.set(sourceSlot, ItemStack.EMPTY);
+				}
+
+				return true;
+			}
+
+			if (targetBlockEntity == null || targetContainer == null) {
 				continue;
 			}
 
@@ -292,6 +305,12 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 		BlockEntity sourceBlockEntity = this.level.getBlockEntity(sourcePos);
 
 		if (!(sourceBlockEntity instanceof Container sourceContainer)) {
+			return false;
+		}
+
+		// Vendor Hopper stacks are output-driven. The upper hopper must decide whether an item
+		// is diverted downward by an explicit lower template before its normal facing output.
+		if (sourceBlockEntity instanceof VendorHopperBlockEntity) {
 			return false;
 		}
 
@@ -378,6 +397,34 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 
 	private AABB getPickupArea() {
 		return new AABB(this.worldPosition.above());
+	}
+
+	private boolean tryDivertOneItemDownwardByTemplate(ItemStack sourceStack) {
+		if (this.level == null || sourceStack.isEmpty()) {
+			return false;
+		}
+
+		BlockEntity lowerBlockEntity = this.level.getBlockEntity(this.worldPosition.below());
+
+		if (!(lowerBlockEntity instanceof VendorHopperBlockEntity lowerVendorHopper)) {
+			return false;
+		}
+
+		if (!this.canAccessTargetContainer(lowerVendorHopper)) {
+			return false;
+		}
+
+		ItemStack transferStack = sourceStack.copy();
+		transferStack.setCount(COUNT_TRANSFER_ITEMS_PER_CYCLE);
+
+		ItemStack remainingStack = lowerVendorHopper.insertForDownwardTemplateDiversion(transferStack);
+
+		if (!remainingStack.isEmpty()) {
+			return false;
+		}
+
+		sourceStack.shrink(COUNT_TRANSFER_ITEMS_PER_CYCLE);
+		return true;
 	}
 
 	private ItemStack insertIntoTargetContainer(
@@ -570,6 +617,20 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 
 	public ItemStack insertForSecureTransfer(ItemStack sourceStack) {
 		return this.insertIntoInternalInventory(sourceStack);
+	}
+
+	private ItemStack insertForDownwardTemplateDiversion(ItemStack sourceStack) {
+		ItemStack remainingStack = sourceStack.copy();
+
+		// Downward sorting diversion accepts only explicit Template matches.
+		// Empty Template lanes are intentionally ignored here, unlike general hopper input.
+		this.insertIntoMatchingTemplateBuffers(remainingStack);
+
+		if (remainingStack.getCount() != sourceStack.getCount()) {
+			this.setChanged();
+		}
+
+		return remainingStack;
 	}
 
 	public ItemStack extractBufferForSecureTransfer(int maxCount) {
