@@ -60,8 +60,16 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 	private static final Permission OPERATOR_PERMISSION = Permissions.COMMANDS_GAMEMASTER;
 
 	// Transfer constants. Vanilla hopper-like cadence: one item per cycle.
-	private static final int TICKS_TRANSFER_INTERVAL = 8;
+	// The local cooldown is decremented on the ticks between transfer attempts.
+	// Setting the value to 7 produces an effective 8-tick cadence: transfer tick + 7 cooldown ticks.
+	private static final int TICKS_TRANSFER_INTERVAL = 7;
 	private static final int COUNT_TRANSFER_ITEMS_PER_CYCLE = 1;
+
+	// Dropped item pickup area.
+	// The scan covers the hopper body plus the input space above it.
+	// A half-block horizontal margin catches fast item entities that are pushed onto a neighboring block edge,
+	// while keeping the behavior local to the hopper instead of turning it into a wide-area vacuum collector.
+	private static final double DROPPED_ITEM_PICKUP_HORIZONTAL_PADDING = 0.5D;
 
 	private UUID ownerUuid;
 	private String ownerName = DEFAULT_OWNER_NAME;
@@ -93,6 +101,10 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 		if (!this.hasOwner()) {
 			return;
 		}
+
+		// Dropped items can be short-lived in the hopper input area when other blocks eject them with velocity.
+		// Scan for them every tick, independently from the scheduled one-item transfer cooldown.
+		this.pickUpDroppedItemsFromPickupArea();
 
 		if (this.transferCooldownTicks > 0) {
 			this.transferCooldownTicks--;
@@ -212,25 +224,24 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 	}
 
 	private boolean transferOneCycle() {
-		// Push first to free internal space, then pull if nothing was pushed.
-		// After block-container pull, collect container entities and dropped items from the vanilla-like pickup area.
+		// Push first to free internal space, then try one input action during the same cycle.
+		// This preserves the one-item-per-operation rule while avoiding the old alternating
+		// push-or-pull behavior that made through-routing noticeably slower than vanilla hoppers.
+		// Dropped item pickup is handled every tick before the transfer cooldown check.
+		boolean transferredAnyItem = false;
+
 		if (this.pushOneItemToOutput()) {
-			return true;
+			transferredAnyItem = true;
 		}
 
 		if (this.pullOneItemFromAbove()) {
-			return true;
+			transferredAnyItem = true;
+		}
+		else if (!this.hasSourceContainerBlockAbove() && this.pullOneItemFromContainerEntityAbove()) {
+			transferredAnyItem = true;
 		}
 
-		if (this.hasSourceContainerBlockAbove()) {
-			return false;
-		}
-
-		if (this.pullOneItemFromContainerEntityAbove()) {
-			return true;
-		}
-
-		return this.pickUpDroppedItemFromAbove();
+		return transferredAnyItem;
 	}
 
 	private boolean pushOneItemToOutput() {
@@ -370,33 +381,72 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 		return false;
 	}
 
-	private boolean pickUpDroppedItemFromAbove() {
+	private boolean pickUpDroppedItemsFromPickupArea() {
 		if (!this.hasAnyFreeInternalSpace()) {
 			return false;
 		}
 
+		boolean pickedUpAnyItem = false;
+
 		for (ItemEntity itemEntity : this.level.getEntitiesOfClass(ItemEntity.class, this.getPickupArea(), itemEntity -> !itemEntity.getItem().isEmpty())) {
-			ItemStack itemStack = itemEntity.getItem();
-			ItemStack remainingStack = this.insertIntoInternalInventory(itemStack);
+			if (this.pickUpDroppedItem(itemEntity)) {
+				pickedUpAnyItem = true;
 
-			if (remainingStack.getCount() == itemStack.getCount()) {
-				continue;
+				if (!this.hasAnyFreeInternalSpace()) {
+					break;
+				}
 			}
-
-			if (remainingStack.isEmpty()) {
-				itemEntity.discard();
-			} else {
-				itemEntity.setItem(remainingStack);
-			}
-
-			return true;
 		}
 
-		return false;
+		return pickedUpAnyItem;
+	}
+
+	public boolean tryPickUpCollidedItem(ItemEntity itemEntity) {
+		if (this.level == null || this.level.isClientSide()) {
+			return false;
+		}
+
+		if (!this.hasOwner()) {
+			return false;
+		}
+
+		// Collision pickup must not be blocked by the scheduled transfer cooldown.
+		// Fast item entities can pass through the hopper body and settle outside the normal scan area
+		// before the next 8-tick transfer cycle. Keep the cooldown for scheduled transfers,
+		// but allow the collision path to catch items at the moment they touch the hopper.
+		return this.pickUpDroppedItem(itemEntity);
+	}
+
+	private boolean pickUpDroppedItem(ItemEntity itemEntity) {
+		if (!this.hasAnyFreeInternalSpace()) {
+			return false;
+		}
+
+		ItemStack itemStack = itemEntity.getItem();
+
+		if (itemStack.isEmpty()) {
+			return false;
+		}
+
+		ItemStack remainingStack = this.insertIntoInternalInventory(itemStack);
+
+		if (remainingStack.getCount() == itemStack.getCount()) {
+			return false;
+		}
+
+		if (remainingStack.isEmpty()) {
+			itemEntity.discard();
+		} else {
+			itemEntity.setItem(remainingStack);
+		}
+
+		return true;
 	}
 
 	private AABB getPickupArea() {
-		return new AABB(this.worldPosition.above());
+		return new AABB(this.worldPosition)
+				.expandTowards(0.0D, 1.0D, 0.0D)
+				.inflate(DROPPED_ITEM_PICKUP_HORIZONTAL_PADDING, 0.0D, DROPPED_ITEM_PICKUP_HORIZONTAL_PADDING);
 	}
 
 	private boolean tryDivertOneItemDownwardByTemplate(ItemStack sourceStack) {

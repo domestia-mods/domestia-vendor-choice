@@ -8,8 +8,13 @@
 
 - Added downward template diversion for Vendor Hopper output, enabling simple sorting-bus layouts with a Vendor Hopper placed directly below another Vendor Hopper.
 
+### Changed
+
+- Improved Vendor Hopper transfer throughput so hopper chains move items more consistently with vanilla hopper pacing.
+
 ### Fixed
 
+- Fixed unreliable Vendor Hopper dropped-item pickup for item entities moving through or near the hopper body.
 - Fixed a minor Vendor Machine recipe issue.
 
 ## 1.2.2

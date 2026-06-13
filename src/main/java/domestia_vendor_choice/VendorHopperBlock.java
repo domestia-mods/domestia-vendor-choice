@@ -8,7 +8,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -113,6 +116,32 @@ public class VendorHopperBlock extends Block implements EntityBlock {
 	@Override
 	protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 		return getShapeForFacing(state.getValue(FACING));
+	}
+
+	@Override
+	protected void entityInside(
+			BlockState state,
+			Level level,
+			BlockPos pos,
+			Entity entity,
+			InsideBlockEffectApplier effectApplier,
+			boolean insideBlock
+	) {
+		super.entityInside(state, level, pos, entity, effectApplier, insideBlock);
+
+		if (level.isClientSide()) {
+			return;
+		}
+
+		if (!(entity instanceof ItemEntity itemEntity)) {
+			return;
+		}
+
+		BlockEntity blockEntity = level.getBlockEntity(pos);
+
+		if (blockEntity instanceof VendorHopperBlockEntity vendorHopperBlockEntity) {
+			vendorHopperBlockEntity.tryPickUpCollidedItem(itemEntity);
+		}
 	}
 
 	private static VoxelShape getShapeForFacing(Direction direction) {
