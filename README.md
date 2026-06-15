@@ -1,12 +1,12 @@
-<h1 align="center">Domestia Vendor Choice</h1>
+<h1 align="center">Domestia Player Choice</h1>
 
 <p align="center">
-  <img src="docs/assets/DVCmod-header.png" alt="Domestia Vendor Choice" width="100%">
+  <img src="docs/assets/DPCmod-header.png" alt="Domestia Player Choice" width="100%">
 </p>
 
 <h3 align="center">
-  <a href="https://github.com/domestia-mods/domestia-vendor-choice/releases">
-    <img src="https://img.shields.io/badge/status-release-brightgreen" alt="Status">
+  <a href="https://github.com/domestia-mods/domestia-player-choice/releases">
+    <img src="https://img.shields.io/badge/status-development-orange" alt="Status">
   </a>
   <img src="https://img.shields.io/badge/Minecraft-1.21.x-brightgreen" alt="Minecraft">
   <img src="https://img.shields.io/badge/Loader-Fabric-blue" alt="Fabric">
@@ -20,50 +20,53 @@
 
 ## About
 
-**Domestia Vendor Choice** is a Fabric mod for Minecraft focused on player-to-player economy.
+**Domestia Player Choice** is a Fabric mod for Minecraft focused on player tools, utility gadgets, and specialized interaction mechanics.
 
-It adds protected commercial infrastructure for multiplayer survival servers: vending machines, private storage, and owner-aware item logistics.
+If all you have is a hammer, everything looks like a nail.
 
-The mod is designed for players who want to build shops, manage stock, collect payments, and automate trading systems while preserving ownership and controlled access.
+This mod is designed for players who want more deliberate ways to interact with the world: practical instruments, focused gadgets, server-friendly tools, and survival-oriented systems that expand gameplay without replacing the Minecraft core.
+
+The goal is not to add one universal solution for every problem, but to provide meaningful choices: the right tool, for the right task, in the right hands.
 
 ## Core Features
 
-- Owner-aware Vendor blocks.
-- Player-operated vending machines.
-- Protected commercial storage.
-- Private logistics for shop infrastructure.
-- Purchase-triggered redstone transaction pulse.
-- Vanilla-compatible interfaces and survival-oriented crafting.
-- PBR-oriented block textures with normal and specular maps.
+- Player-focused utility tools and gadgets.
+- Specialized instruments for survival gameplay.
+- Server-friendly interaction mechanics.
+- Vanilla-compatible behavior where possible.
+- Progression-aware crafting and item usage.
+- Multiplayer-oriented design.
+- Clear visual identity for functional items and devices.
+- PBR-oriented textures with normal and specular maps where appropriate.
 
-## Main Blocks
+## Main Concept
 
-Domestia Vendor Choice currently includes:
+Domestia Player Choice is built around practical player agency.
 
-- **Vendor Machine** — a player-owned vending machine for direct item exchange.
-- **Vendor Safe** — protected private storage for shop supplies, revenue, and logistics.
-- **Vendor Hopper** — owner-aware item logistics for Vendor infrastructure and intentional container connections.
+Instead of forcing every situation through the same generic item or command, the mod introduces tools with specific purposes, recognizable roles, and intentional limitations.
 
-Detailed behavior, layouts, recipes, and access rules are documented in the project wiki.
+The result is a toolkit-style gameplay layer for multiplayer survival servers: powerful enough to matter, restrained enough to stay fair, and flexible enough to grow over time.
+
+Detailed behavior, recipes, item usage rules, and balancing notes are documented in the project wiki.
 
 ## Documentation
 
 Full documentation is available in the GitHub Wiki:
 
-[Domestia Vendor Choice Wiki](https://github.com/domestia-mods/domestia-vendor-choice/wiki)
+[Domestia Player Choice Wiki](https://github.com/domestia-mods/domestia-player-choice/wiki)
 
 Useful starting pages:
 
-- [Creating a Basic Shop](https://github.com/domestia-mods/domestia-vendor-choice/wiki/Creating-a-Basic-Shop)
-- [Automatic Restock and Payment Collection](https://github.com/domestia-mods/domestia-vendor-choice/wiki/Automatic-Restock-and-Payment-Collection)
-- [Protected Logistics Rules](https://github.com/domestia-mods/domestia-vendor-choice/wiki/Protected-Logistics-Rules)
-- [Ownership and Access Rules](https://github.com/domestia-mods/domestia-vendor-choice/wiki/Ownership-and-Access-Rules)
+- [Getting Started](https://github.com/domestia-mods/domestia-player-choice/wiki/Getting-Started)
+- [Tools and Gadgets](https://github.com/domestia-mods/domestia-player-choice/wiki/Tools-and-Gadgets)
+- [Crafting and Progression](https://github.com/domestia-mods/domestia-player-choice/wiki/Crafting-and-Progression)
+- [Server Gameplay Notes](https://github.com/domestia-mods/domestia-player-choice/wiki/Server-Gameplay-Notes)
 
 ## Releases
 
 Downloads and release notes are available here:
 
-[GitHub Releases](https://github.com/domestia-mods/domestia-vendor-choice/releases)
+[GitHub Releases](https://github.com/domestia-mods/domestia-player-choice/releases)
 
 For exact version changes, see:
 
@@ -77,9 +80,9 @@ For exact version changes, see:
 
 ## Status
 
-Beta.
+Development preview.
 
-This mod is released and playable, but it is still being tested and balanced on the Domestia server. Recipes, block behavior, and documentation may continue to change as gameplay balance is refined.
+This mod is being developed and tested on the Domestia server. Tools, recipes, behavior, balance, and documentation may continue to change as the gameplay model is refined.
 
 ## Support
 
@@ -94,3 +97,4 @@ If you like this project, you can support development here:
 ## License
 
 See [LICENSE](LICENSE).
+```
