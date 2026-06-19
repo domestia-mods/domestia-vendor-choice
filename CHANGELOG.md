@@ -8,15 +8,25 @@
 
 - Added Vendor Note, an owner-authored public note block with floor and wall variants.
 - Vendor Note supports owner-only editing, public read-only viewing, and persistent owner, title, and body data.
+- Added full text-selection support to the Vendor Note editor, including keyboard selection, mouse selection, copy, cut, paste, select-all, and selection replacement while typing.
+
+### Security
+
+- Vendor Machine Sales GUI no longer synchronizes raw Vault item stacks to buyers. The sales screen now receives server-computed purchase limits instead of private Vault contents, while checkout still validates the real Vault on the server.
 
 ### Changed
 
 - Vendor Note now uses a custom textured text interface for editing and reading notes.
+- Vendor Note body wrapping now prefers whitespace boundaries instead of splitting words across lines.
 - Improved Vendor Note model orientation, item rendering, text rendering, and interaction shapes.
+- User-facing naming has been standardized on Vendor Note; internal floor-model naming remains implementation-only.
+- Localized remaining Vendor Note and Vendor Hopper UI text constants through the language file.
+- Unified shared owner/admin access checks through a common VendorAccess helper.
+- Unified shared player inventory and hotbar menu-slot layout through a common VendorMenuSlots helper.
 
 ### Fixed
 
-- Fixed Vendor Stand interaction issues on the tilted floor surface.
+- Fixed Vendor Note interaction issues on the tilted floor surface.
 - Fixed Vendor Machine label text visibility in low light.
 - Fixed Vendor Machine front display item orientation for asymmetric item models.
 
