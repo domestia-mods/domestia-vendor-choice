@@ -13,10 +13,10 @@ public final class ModNetworking {
 	}
 
 	public static void initialize() {
-		PayloadTypeRegistry.clientboundPlay().register(VendorStandOpenPayload.TYPE, VendorStandOpenPayload.CODEC);
-		PayloadTypeRegistry.serverboundPlay().register(VendorStandSavePayload.TYPE, VendorStandSavePayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(VendorNoteOpenPayload.TYPE, VendorNoteOpenPayload.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(VendorNoteSavePayload.TYPE, VendorNoteSavePayload.CODEC);
 
-		ServerPlayNetworking.registerGlobalReceiver(VendorStandSavePayload.TYPE, (payload, context) -> {
+		ServerPlayNetworking.registerGlobalReceiver(VendorNoteSavePayload.TYPE, (payload, context) -> {
 			ServerPlayer player = context.player();
 			BlockPos pos = payload.pos();
 
@@ -26,26 +26,26 @@ public final class ModNetworking {
 
 			BlockEntity blockEntity = player.level().getBlockEntity(pos);
 
-			if (!(blockEntity instanceof VendorStandBlockEntity vendorStandBlockEntity)) {
+			if (!(blockEntity instanceof VendorNoteBlockEntity vendorNoteBlockEntity)) {
 				return;
 			}
 
-			vendorStandBlockEntity.updateText(player, payload.title(), payload.body());
+			vendorNoteBlockEntity.updateText(player, payload.title(), payload.body());
 		});
 
 		DomestiaVendorChoice.LOGGER.info("Registering Domestia Vendor Choice networking.");
 	}
 
-	public static void openVendorStand(ServerPlayer player, VendorStandBlockEntity vendorStandBlockEntity) {
-		boolean editable = vendorStandBlockEntity.canManage(player);
+	public static void openVendorNote(ServerPlayer player, VendorNoteBlockEntity vendorNoteBlockEntity) {
+		boolean editable = vendorNoteBlockEntity.canManage(player);
 
 		ServerPlayNetworking.send(
 				player,
-				new VendorStandOpenPayload(
-						vendorStandBlockEntity.getBlockPos(),
-						vendorStandBlockEntity.getOwnerName(),
-						vendorStandBlockEntity.getTitleText(),
-						vendorStandBlockEntity.getBodyText(),
+				new VendorNoteOpenPayload(
+						vendorNoteBlockEntity.getBlockPos(),
+						vendorNoteBlockEntity.getOwnerName(),
+						vendorNoteBlockEntity.getTitleText(),
+						vendorNoteBlockEntity.getBodyText(),
 						editable
 				)
 		);

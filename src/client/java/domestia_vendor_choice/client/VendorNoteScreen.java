@@ -1,9 +1,9 @@
 package domestia_vendor_choice.client;
 
 import domestia_vendor_choice.DomestiaVendorChoice;
-import domestia_vendor_choice.VendorStandBlockEntity;
-import domestia_vendor_choice.VendorStandOpenPayload;
-import domestia_vendor_choice.VendorStandSavePayload;
+import domestia_vendor_choice.VendorNoteBlockEntity;
+import domestia_vendor_choice.VendorNoteOpenPayload;
+import domestia_vendor_choice.VendorNoteSavePayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -19,7 +19,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VendorStandScreen extends Screen {
+public class VendorNoteScreen extends Screen {
 	private static final int PANEL_MAX_WIDTH = 320;
 	private static final int PANEL_MAX_HEIGHT = 260;
 	private static final int PANEL_MARGIN = 12;
@@ -62,18 +62,18 @@ public class VendorStandScreen extends Screen {
 	private static final int COLOR_SCROLLBAR_THUMB = 0xFF000000;
 	private static final String BODY_COUNTER_SEPARATOR = "/";
 
-	private static final Component SCREEN_TITLE = Component.translatable("screen.domestia_vendor_choice.vendor_stand");
-	private static final Component BUTTON_SAVE = Component.translatable("screen.domestia_vendor_choice.vendor_stand.save");
-	private static final Component BUTTON_CANCEL = Component.translatable("screen.domestia_vendor_choice.vendor_stand.cancel");
-	private static final Component BUTTON_CLOSE = Component.translatable("screen.domestia_vendor_choice.vendor_stand.close");
-	private static final String ID_AUTHOR_BY = "screen.domestia_vendor_choice.vendor_stand.by";
+	private static final Component SCREEN_TITLE = Component.translatable("screen.domestia_vendor_choice.vendor_note");
+	private static final Component BUTTON_SAVE = Component.translatable("screen.domestia_vendor_choice.vendor_note.save");
+	private static final Component BUTTON_CANCEL = Component.translatable("screen.domestia_vendor_choice.vendor_note.cancel");
+	private static final Component BUTTON_CLOSE = Component.translatable("screen.domestia_vendor_choice.vendor_note.close");
+	private static final String ID_AUTHOR_BY = "screen.domestia_vendor_choice.vendor_note.by";
 
 	private static final Identifier TEXTURE_VENDOR_NOTE_CONTROL = Identifier.fromNamespaceAndPath(
 			DomestiaVendorChoice.MOD_ID,
 			"textures/gui/vendor_note_control.png"
 	);
 
-	private final VendorStandOpenPayload payload;
+	private final VendorNoteOpenPayload payload;
 	private String titleValue;
 	private String bodyValue;
 	private EditorFocus editorFocus = EditorFocus.NONE;
@@ -89,11 +89,11 @@ public class VendorStandScreen extends Screen {
 	private int panelHeight;
 	private int cursorTicks;
 
-	public VendorStandScreen(VendorStandOpenPayload payload) {
+	public VendorNoteScreen(VendorNoteOpenPayload payload) {
 		super(SCREEN_TITLE);
 		this.payload = payload;
-		this.titleValue = trimToMaxLength(payload.title(), VendorStandBlockEntity.MAX_TITLE_LENGTH);
-		this.bodyValue = trimToMaxLength(payload.body(), VendorStandBlockEntity.MAX_BODY_LENGTH);
+		this.titleValue = trimToMaxLength(payload.title(), VendorNoteBlockEntity.MAX_TITLE_LENGTH);
+		this.bodyValue = trimToMaxLength(payload.body(), VendorNoteBlockEntity.MAX_BODY_LENGTH);
 		this.titleCaret = this.titleValue.length();
 		this.titleSelectionAnchor = this.titleCaret;
 		this.bodyCaret = this.bodyValue.length();
@@ -153,10 +153,10 @@ public class VendorStandScreen extends Screen {
 
 	private void saveAndClose() {
 		ClientPlayNetworking.send(
-				new VendorStandSavePayload(
+				new VendorNoteSavePayload(
 						this.payload.pos(),
-						trimToMaxLength(this.titleValue, VendorStandBlockEntity.MAX_TITLE_LENGTH),
-						trimToMaxLength(this.bodyValue, VendorStandBlockEntity.MAX_BODY_LENGTH)
+						trimToMaxLength(this.titleValue, VendorNoteBlockEntity.MAX_TITLE_LENGTH),
+						trimToMaxLength(this.bodyValue, VendorNoteBlockEntity.MAX_BODY_LENGTH)
 				)
 		);
 		this.onClose();
@@ -539,7 +539,7 @@ public class VendorStandScreen extends Screen {
 	}
 
 	private void renderBodyCounter(GuiGraphicsExtractor graphics) {
-		String counterText = this.bodyValue.length() + BODY_COUNTER_SEPARATOR + VendorStandBlockEntity.MAX_BODY_LENGTH;
+		String counterText = this.bodyValue.length() + BODY_COUNTER_SEPARATOR + VendorNoteBlockEntity.MAX_BODY_LENGTH;
 		int counterX = this.toScreenX(BODY_AREA_X + BODY_AREA_WIDTH) - this.font.width(counterText);
 		int counterY = this.toScreenY(BODY_COUNTER_Y);
 
@@ -598,7 +598,7 @@ public class VendorStandScreen extends Screen {
 		if (this.editorFocus == EditorFocus.TITLE) {
 			String sanitized = value.replace("\r", "").replace("\n", " ");
 			this.deleteTitleSelection();
-			int available = VendorStandBlockEntity.MAX_TITLE_LENGTH - this.titleValue.length();
+			int available = VendorNoteBlockEntity.MAX_TITLE_LENGTH - this.titleValue.length();
 
 			if (available <= 0) {
 				return;
@@ -613,7 +613,7 @@ public class VendorStandScreen extends Screen {
 		if (this.editorFocus == EditorFocus.BODY) {
 			String normalized = value.replace("\r\n", "\n").replace('\r', '\n');
 			this.deleteBodySelection();
-			int available = VendorStandBlockEntity.MAX_BODY_LENGTH - this.bodyValue.length();
+			int available = VendorNoteBlockEntity.MAX_BODY_LENGTH - this.bodyValue.length();
 
 			if (available <= 0) {
 				return;

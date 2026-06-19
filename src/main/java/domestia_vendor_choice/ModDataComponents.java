@@ -6,11 +6,11 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 
 public final class ModDataComponents {
-	public static final DataComponentType<VendorStandData> VENDOR_STAND_DATA = Registry.register(
+	public static final DataComponentType<VendorNoteData> VENDOR_NOTE_DATA = Registry.register(
 			BuiltInRegistries.DATA_COMPONENT_TYPE,
-			Identifier.fromNamespaceAndPath(DomestiaVendorChoice.MOD_ID, "vendor_stand_data"),
-			DataComponentType.<VendorStandData>builder()
-					.persistent(VendorStandData.CODEC)
+			Identifier.fromNamespaceAndPath(DomestiaVendorChoice.MOD_ID, "vendor_note_data"),
+			DataComponentType.<VendorNoteData>builder()
+					.persistent(VendorNoteData.CODEC)
 					.build()
 	);
 

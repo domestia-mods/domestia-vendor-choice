@@ -15,7 +15,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.UUID;
 
-public class VendorStandBlockEntity extends BlockEntity {
+public class VendorNoteBlockEntity extends BlockEntity {
 	private static final String KEY_OWNER_UUID = "OwnerUuid";
 	private static final String KEY_OWNER_NAME = "OwnerName";
 	private static final String KEY_TITLE = "Title";
@@ -31,8 +31,8 @@ public class VendorStandBlockEntity extends BlockEntity {
 	private String title = "";
 	private String body = "";
 
-	public VendorStandBlockEntity(BlockPos pos, BlockState state) {
-		super(ModBlockEntities.VENDOR_STAND, pos, state);
+	public VendorNoteBlockEntity(BlockPos pos, BlockState state) {
+		super(ModBlockEntities.VENDOR_NOTE, pos, state);
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class VendorStandBlockEntity extends BlockEntity {
 	}
 
 	public void initializeFromPlacedItem(Player placer, ItemStack stack) {
-		VendorStandData storedData = stack.getOrDefault(ModDataComponents.VENDOR_STAND_DATA, VendorStandData.EMPTY);
+		VendorNoteData storedData = stack.getOrDefault(ModDataComponents.VENDOR_NOTE_DATA, VendorNoteData.EMPTY);
 
 		if (storedData.hasOwner()) {
 			this.applyData(storedData);
@@ -95,7 +95,7 @@ public class VendorStandBlockEntity extends BlockEntity {
 		this.setChanged();
 	}
 
-	private void applyData(VendorStandData data) {
+	private void applyData(VendorNoteData data) {
 		this.ownerUuid = data.ownerUuidValue();
 		this.ownerName = normalizeOwnerName(data.ownerName());
 		this.title = normalizeTitle(data.title());
@@ -104,13 +104,13 @@ public class VendorStandBlockEntity extends BlockEntity {
 	}
 
 	public ItemStack createPreservedItemStack() {
-		ItemStack stack = new ItemStack(ModBlocks.VENDOR_STAND);
-		stack.set(ModDataComponents.VENDOR_STAND_DATA, this.toData());
+		ItemStack stack = new ItemStack(ModBlocks.VENDOR_NOTE);
+		stack.set(ModDataComponents.VENDOR_NOTE_DATA, this.toData());
 		return stack;
 	}
 
-	public VendorStandData toData() {
-		return new VendorStandData(
+	public VendorNoteData toData() {
+		return new VendorNoteData(
 				this.ownerUuid == null ? "" : this.ownerUuid.toString(),
 				this.ownerName,
 				this.title,

@@ -44,7 +44,7 @@ Domestia Vendor Choice currently includes:
 - **Vendor Machine** — a player-owned vending machine for direct item exchange.
 - **Vendor Safe** — protected private storage for shop supplies, revenue, and logistics.
 - **Vendor Hopper** — owner-aware item logistics for Vendor infrastructure and intentional container connections.
-- **Vendor Note** — an owner-protected note stand for public read-only shop information and player-written notices.
+- **Vendor Note** — an owner-protected note display for public read-only shop information and player-written notices.
 
 Detailed behavior, layouts, recipes, and access rules are documented in the project wiki.
 

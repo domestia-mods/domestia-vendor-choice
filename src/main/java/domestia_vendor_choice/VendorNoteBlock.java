@@ -29,8 +29,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class VendorStandBlock extends Block implements EntityBlock {
-	public static final MapCodec<VendorStandBlock> CODEC = simpleCodec(VendorStandBlock::new);
+public class VendorNoteBlock extends Block implements EntityBlock {
+	public static final MapCodec<VendorNoteBlock> CODEC = simpleCodec(VendorNoteBlock::new);
 	public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 	public static final BooleanProperty WALL = BooleanProperty.create("wall");
 
@@ -44,7 +44,7 @@ public class VendorStandBlock extends Block implements EntityBlock {
 	private static final VoxelShape WALL_SHAPE_SOUTH = rotateNorthShape(WALL_SHAPE_NORTH, Direction.SOUTH);
 	private static final VoxelShape WALL_SHAPE_WEST = rotateNorthShape(WALL_SHAPE_NORTH, Direction.WEST);
 
-	public VendorStandBlock(BlockBehaviour.Properties properties) {
+	public VendorNoteBlock(BlockBehaviour.Properties properties) {
 		super(properties);
 		this.registerDefaultState(
 				this.stateDefinition.any()
@@ -80,7 +80,7 @@ public class VendorStandBlock extends Block implements EntityBlock {
 
 	@Override
 	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-		return new VendorStandBlockEntity(pos, state);
+		return new VendorNoteBlockEntity(pos, state);
 	}
 
 	@Override
@@ -93,8 +93,8 @@ public class VendorStandBlock extends Block implements EntityBlock {
 
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 
-		if (blockEntity instanceof VendorStandBlockEntity vendorStandBlockEntity) {
-			vendorStandBlockEntity.initializeFromPlacedItem(player, stack);
+		if (blockEntity instanceof VendorNoteBlockEntity vendorNoteBlockEntity) {
+			vendorNoteBlockEntity.initializeFromPlacedItem(player, stack);
 		}
 	}
 
@@ -136,8 +136,8 @@ public class VendorStandBlock extends Block implements EntityBlock {
 		if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
 			BlockEntity blockEntity = level.getBlockEntity(pos);
 
-			if (blockEntity instanceof VendorStandBlockEntity vendorStandBlockEntity) {
-				ModNetworking.openVendorStand(serverPlayer, vendorStandBlockEntity);
+			if (blockEntity instanceof VendorNoteBlockEntity vendorNoteBlockEntity) {
+				ModNetworking.openVendorNote(serverPlayer, vendorNoteBlockEntity);
 			}
 		}
 

@@ -45,16 +45,16 @@ public class ModBlocks {
 			true
 	);
 
-	public static final Block VENDOR_STAND = register(
-			"vendor_stand",
-			VendorStandBlock::new,
+	public static final Block VENDOR_NOTE = register(
+			"vendor_note",
+			VendorNoteBlock::new,
 			BlockBehaviour.Properties.of()
 					.strength(2.5f, 3.0f)
 					.sound(SoundType.WOOD)
 					.noOcclusion(),
 			new Item.Properties()
 					.stacksTo(1)
-					.component(ModDataComponents.VENDOR_STAND_DATA, VendorStandData.EMPTY)
+					.component(ModDataComponents.VENDOR_NOTE_DATA, VendorNoteData.EMPTY)
 	);
 
 	private static Block register(
@@ -107,7 +107,7 @@ public class ModBlocks {
 			output.accept(VENDOR_MACHINE.asItem());
 			output.accept(VENDOR_SAFE.asItem());
 			output.accept(VENDOR_HOPPER.asItem());
-			output.accept(VENDOR_STAND.asItem());
+			output.accept(VENDOR_NOTE.asItem());
 		});
 
 		DomestiaVendorChoice.LOGGER.info("Registering Domestia Vendor Choice blocks.");

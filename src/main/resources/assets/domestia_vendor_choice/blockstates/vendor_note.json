@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=north,wall=false": {
-      "model": "domestia_vendor_choice:block/vendor_note_stand"
+      "model": "domestia_vendor_choice:block/vendor_note_floor"
     },
     "facing=east,wall=false": {
-      "model": "domestia_vendor_choice:block/vendor_note_stand",
+      "model": "domestia_vendor_choice:block/vendor_note_floor",
       "y": 90
     },
     "facing=south,wall=false": {
-      "model": "domestia_vendor_choice:block/vendor_note_stand",
+      "model": "domestia_vendor_choice:block/vendor_note_floor",
       "y": 180
     },
     "facing=west,wall=false": {
-      "model": "domestia_vendor_choice:block/vendor_note_stand",
+      "model": "domestia_vendor_choice:block/vendor_note_floor",
       "y": 270
     },
     "facing=north,wall=true": {

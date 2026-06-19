@@ -2,8 +2,8 @@ package domestia_vendor_choice.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import domestia_vendor_choice.VendorStandBlock;
-import domestia_vendor_choice.VendorStandBlockEntity;
+import domestia_vendor_choice.VendorNoteBlock;
+import domestia_vendor_choice.VendorNoteBlockEntity;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -15,7 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class VendorStandBlockEntityRenderer implements BlockEntityRenderer<VendorStandBlockEntity, VendorStandBlockEntityRenderState> {
+public class VendorNoteBlockEntityRenderer implements BlockEntityRenderer<VendorNoteBlockEntity, VendorNoteBlockEntityRenderState> {
 	private static final float BLOCK_CENTER = 0.5F;
 	private static final float SURFACE_GAP = 0.004F;
 	private static final float FLOOR_PANEL_MODEL_ANGLE_DEGREES = -17.5F;
@@ -43,34 +43,34 @@ public class VendorStandBlockEntityRenderer implements BlockEntityRenderer<Vendo
 
 	private final Font font;
 
-	public VendorStandBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
+	public VendorNoteBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
 		this.font = context.font();
 	}
 
 	@Override
-	public VendorStandBlockEntityRenderState createRenderState() {
-		return new VendorStandBlockEntityRenderState();
+	public VendorNoteBlockEntityRenderState createRenderState() {
+		return new VendorNoteBlockEntityRenderState();
 	}
 
 	@Override
 	public void extractRenderState(
-			VendorStandBlockEntity blockEntity,
-			VendorStandBlockEntityRenderState renderState,
+			VendorNoteBlockEntity blockEntity,
+			VendorNoteBlockEntityRenderState renderState,
 			float tickProgress,
 			Vec3 cameraPos,
 			@Nullable ModelFeatureRenderer.CrumblingOverlay crumblingOverlay
 	) {
 		BlockEntityRenderer.super.extractRenderState(blockEntity, renderState, tickProgress, cameraPos, crumblingOverlay);
 
-		renderState.setFacing(blockEntity.getBlockState().getValue(VendorStandBlock.FACING));
-		renderState.setWall(blockEntity.getBlockState().getValue(VendorStandBlock.WALL));
+		renderState.setFacing(blockEntity.getBlockState().getValue(VendorNoteBlock.FACING));
+		renderState.setWall(blockEntity.getBlockState().getValue(VendorNoteBlock.WALL));
 		renderState.setOwnerName(blockEntity.getOwnerName());
 		renderState.setTitle(blockEntity.getTitleText());
 	}
 
 	@Override
 	public void submit(
-			VendorStandBlockEntityRenderState renderState,
+			VendorNoteBlockEntityRenderState renderState,
 			PoseStack poseStack,
 			SubmitNodeCollector collector,
 			CameraRenderState cameraState
@@ -96,7 +96,7 @@ public class VendorStandBlockEntityRenderer implements BlockEntityRenderer<Vendo
 	private void submitTextLine(
 			PoseStack poseStack,
 			SubmitNodeCollector collector,
-			VendorStandBlockEntityRenderState renderState,
+			VendorNoteBlockEntityRenderState renderState,
 			String text,
 			float localY,
 			float scale,

@@ -1,13 +1,13 @@
 package domestia_vendor_choice.client;
 
-import domestia_vendor_choice.VendorStandBlockEntity;
+import domestia_vendor_choice.VendorNoteBlockEntity;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.core.Direction;
 
-public class VendorStandBlockEntityRenderState extends BlockEntityRenderState {
+public class VendorNoteBlockEntityRenderState extends BlockEntityRenderState {
 	private Direction facing = Direction.NORTH;
 	private boolean wall;
-	private String ownerName = VendorStandBlockEntity.DEFAULT_OWNER_NAME;
+	private String ownerName = VendorNoteBlockEntity.DEFAULT_OWNER_NAME;
 	private String title = "";
 
 	public Direction getFacing() {
@@ -32,7 +32,7 @@ public class VendorStandBlockEntityRenderState extends BlockEntityRenderState {
 
 	public void setOwnerName(String ownerName) {
 		this.ownerName = ownerName == null || ownerName.isBlank()
-				? VendorStandBlockEntity.DEFAULT_OWNER_NAME
+				? VendorNoteBlockEntity.DEFAULT_OWNER_NAME
 				: ownerName;
 	}
 

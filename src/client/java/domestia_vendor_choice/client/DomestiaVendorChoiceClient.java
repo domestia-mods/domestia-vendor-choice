@@ -48,8 +48,8 @@ public class DomestiaVendorChoiceClient implements ClientModInitializer {
 		);
 
 		BlockEntityRenderers.register(
-				ModBlockEntities.VENDOR_STAND,
-				VendorStandBlockEntityRenderer::new
+				ModBlockEntities.VENDOR_NOTE,
+				VendorNoteBlockEntityRenderer::new
 		);
 	}
 }

@@ -1,5 +1,5 @@
 {
-  "parent": "domestia_vendor_choice:block/vendor_note_stand",
+  "parent": "domestia_vendor_choice:block/vendor_note_floor",
   "display": {
     "thirdperson_righthand": {
       "rotation": [75, 45, 0],
