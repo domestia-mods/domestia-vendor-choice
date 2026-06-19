@@ -2,16 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "LGL",
-    "SWS",
-    "PPP"
+    " W ",
+    " S ",
+    "IRI"
   ],
   "key": {
-    "L": "#minecraft:planks",
-    "G": "minecraft:glass",
-    "S": "minecraft:stick",
     "W": "minecraft:writable_book",
-    "P": "#minecraft:wooden_slabs"
+    "S": "domestia_vendor_choice:vendor_scrap",
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:stick"
   },
   "result": {
     "id": "domestia_vendor_choice:vendor_note",

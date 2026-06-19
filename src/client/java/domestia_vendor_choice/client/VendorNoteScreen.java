@@ -433,7 +433,7 @@ public class VendorNoteScreen extends Screen {
 		this.renderTitle(graphics);
 		this.renderScaledCenteredText(
 				graphics,
-				Component.translatable(ID_AUTHOR_BY, this.payload.ownerName()),
+				Component.translatable(ID_AUTHOR_BY, this.getOwnerNameComponent()),
 				this.toScreenX(AUTHOR_AREA_X),
 				this.toScreenY(AUTHOR_AREA_Y),
 				this.scaleX(AUTHOR_AREA_WIDTH),
@@ -443,6 +443,16 @@ public class VendorNoteScreen extends Screen {
 		this.renderBody(graphics);
 		this.renderBodyCounter(graphics);
 		this.renderBodyScrollbar(graphics);
+	}
+
+	private Component getOwnerNameComponent() {
+		String ownerName = this.payload.ownerName();
+
+		if (ownerName == null || ownerName.isBlank()) {
+			return Component.translatable(VendorNoteBlockEntity.DEFAULT_OWNER_NAME_KEY);
+		}
+
+		return Component.literal(ownerName);
 	}
 
 	private void renderTitle(GuiGraphicsExtractor graphics) {

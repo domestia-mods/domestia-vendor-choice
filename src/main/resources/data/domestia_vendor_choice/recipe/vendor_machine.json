@@ -1,17 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "redstone",
   "pattern": [
-    "GEG",
-    "CTC",
-    "ISI"
+    "FHF",
+    "FSF",
+    "III"
   ],
   "key": {
-    "G": "minecraft:glass",
-    "E": "minecraft:emerald_block",
-    "C": "domestia_vendor_choice:vendor_safe",
-    "T": "minecraft:redstone_torch",
-    "I": "minecraft:iron_block",
-    "S": "minecraft:lever"
+    "F": "minecraft:glow_item_frame",
+    "H": "domestia_vendor_choice:vendor_hopper",
+    "S": "domestia_vendor_choice:vendor_safe",
+    "I": "minecraft:iron_ingot"
   },
   "result": {
     "id": "domestia_vendor_choice:vendor_machine",

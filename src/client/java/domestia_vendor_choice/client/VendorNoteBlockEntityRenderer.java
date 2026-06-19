@@ -34,7 +34,6 @@ public class VendorNoteBlockEntityRenderer implements BlockEntityRenderer<Vendor
 
 	private static final int OWNER_MAX_VISIBLE_CHARS = 24;
 	private static final int TITLE_MAX_VISIBLE_CHARS = 14;
-	private static final String TRIM_SUFFIX = "...";
 
 	private static final int COLOR_OWNER = 0xFFCCFF66;
 	private static final int COLOR_TITLE = 0xFF99FF00;
@@ -75,8 +74,11 @@ public class VendorNoteBlockEntityRenderer implements BlockEntityRenderer<Vendor
 			SubmitNodeCollector collector,
 			CameraRenderState cameraState
 	) {
-		String ownerText = trim(renderState.getOwnerName(), OWNER_MAX_VISIBLE_CHARS);
-		String titleText = trim(renderState.getTitle(), TITLE_MAX_VISIBLE_CHARS);
+		String ownerText = LocalizedRenderText.trim(
+				LocalizedRenderText.resolve(renderState.getOwnerName(), VendorNoteBlockEntity.DEFAULT_OWNER_NAME_KEY),
+				OWNER_MAX_VISIBLE_CHARS
+		);
+		String titleText = LocalizedRenderText.trim(renderState.getTitle(), TITLE_MAX_VISIBLE_CHARS);
 
 		if (ownerText.isBlank() && titleText.isBlank()) {
 			return;
@@ -148,18 +150,6 @@ public class VendorNoteBlockEntityRenderer implements BlockEntityRenderer<Vendor
 		);
 		poseStack.mulPose(Axis.XP.rotationDegrees(FLOOR_TEXT_PLANE_ANGLE_DEGREES));
 		poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
-	}
-
-	private static String trim(String text, int maxVisibleChars) {
-		if (text == null || text.isBlank()) {
-			return "";
-		}
-
-		if (text.length() <= maxVisibleChars) {
-			return text;
-		}
-
-		return text.substring(0, maxVisibleChars) + TRIM_SUFFIX;
 	}
 
 	private static float getFacingRotationDegrees(Direction facing) {

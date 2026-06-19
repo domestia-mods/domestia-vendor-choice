@@ -30,11 +30,15 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 	private static final String KEY_OWNER_NAME = "OwnerName";
 	private static final String KEY_DISPLAY_NAME = "DisplayName";
 
-	// Default back label. Used when the block item was not renamed on an anvil.
-	public static final String DEFAULT_DISPLAY_NAME = "Sales";
+	// Translation key for the default visible label. Blank stored values use this client-side label.
+	public static final String DEFAULT_DISPLAY_NAME_KEY = "display.domestia_vendor_choice.vendor_machine.default_label";
 
-	// Fallback text for legacy blocks that have OwnerUuid but no stored owner name.
-	public static final String DEFAULT_OWNER_NAME = "Owner";
+	// Translation key for unknown legacy owner names. Blank stored values use this client-side label.
+	public static final String DEFAULT_OWNER_NAME_KEY = "display.domestia_vendor_choice.owner.fallback";
+
+	// Empty stored defaults keep user-facing fallback text in lang files instead of NBT/code.
+	public static final String DEFAULT_DISPLAY_NAME = "";
+	public static final String DEFAULT_OWNER_NAME = "";
 
 	// Vendor inventory layout.
 	public static final int STOCK_SLOT_START = 0;
@@ -809,7 +813,7 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 			return;
 		}
 
-		if (!DEFAULT_OWNER_NAME.equals(this.ownerName)) {
+		if (this.ownerName != null && !this.ownerName.isBlank()) {
 			return;
 		}
 

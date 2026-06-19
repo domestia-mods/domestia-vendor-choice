@@ -46,7 +46,6 @@ public class VendorSafeBlockEntityRenderer implements BlockEntityRenderer<Vendor
 
 	// Text trimming.
 	private static final int TEXT_MAX_VISIBLE_CHARS = 16;
-	private static final String TEXT_TRIM_SUFFIX = "...";
 
 	// Text colors.
 	private static final int COLOR_FRONT_TEXT_OWNER = 0xFFCCFF66;
@@ -102,8 +101,14 @@ public class VendorSafeBlockEntityRenderer implements BlockEntityRenderer<Vendor
 			PoseStack poseStack,
 			SubmitNodeCollector collector
 	) {
-		String ownerText = trimText(renderState.getOwnerName());
-		String labelText = trimText(renderState.getDisplayName());
+		String ownerText = LocalizedRenderText.trim(
+				LocalizedRenderText.resolve(renderState.getOwnerName(), VendorSafeBlockEntity.DEFAULT_OWNER_NAME_KEY),
+				TEXT_MAX_VISIBLE_CHARS
+		);
+		String labelText = LocalizedRenderText.trim(
+				LocalizedRenderText.resolve(renderState.getDisplayName(), VendorSafeBlockEntity.DEFAULT_DISPLAY_NAME_KEY),
+				TEXT_MAX_VISIBLE_CHARS
+		);
 
 		poseStack.pushPose();
 
@@ -163,18 +168,6 @@ public class VendorSafeBlockEntityRenderer implements BlockEntityRenderer<Vendor
 		);
 
 		poseStack.popPose();
-	}
-
-	private static String trimText(String text) {
-		if (text == null || text.isBlank()) {
-			return "";
-		}
-
-		if (text.length() <= TEXT_MAX_VISIBLE_CHARS) {
-			return text;
-		}
-
-		return text.substring(0, TEXT_MAX_VISIBLE_CHARS) + TEXT_TRIM_SUFFIX;
 	}
 
 	private void applyFrontFaceTransform(PoseStack poseStack, Direction facing) {

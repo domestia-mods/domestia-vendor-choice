@@ -1,21 +1,29 @@
 package domestia_vendor_choice;
 
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 
 public class ModEvents {
+	private static final float VENDOR_SCRAP_DROP_CHANCE = 0.05f;
+
 	// Translation keys.
-	private static final String ID_MESSAGE_MACHINE_BREAK_DENIED = "message.domestia_vendor_choice.vendor_machine_break_denied";
-	private static final String ID_MESSAGE_SAFE_BREAK_DENIED = "message.domestia_vendor_choice.vendor_safe_break_denied";
-	private static final String ID_MESSAGE_HOPPER_BREAK_DENIED = "message.domestia_vendor_choice.vendor_hopper_break_denied";
-	private static final String ID_MESSAGE_NOTE_BREAK_DENIED = "message.domestia_vendor_choice.vendor_note_break_denied";
+	private static final String ID_MESSAGE_MACHINE_BREAK_DENIED = "message.domestia_vendor_choice.vendor_machine.break_denied";
+	private static final String ID_MESSAGE_SAFE_BREAK_DENIED = "message.domestia_vendor_choice.vendor_safe.break_denied";
+	private static final String ID_MESSAGE_HOPPER_BREAK_DENIED = "message.domestia_vendor_choice.vendor_hopper.break_denied";
+	private static final String ID_MESSAGE_NOTE_BREAK_DENIED = "message.domestia_vendor_choice.vendor_note.break_denied";
 
 	// Feedback messages.
 	private static final Component MESSAGE_MACHINE_BREAK_DENIED = Component.translatable(ID_MESSAGE_MACHINE_BREAK_DENIED);
@@ -44,7 +52,49 @@ public class ModEvents {
 			return true;
 		});
 
+		PlayerBlockBreakEvents.AFTER.register((level, player, pos, state, blockEntity) -> {
+			tryDropVendorScrap(level, player, pos, state);
+		});
+
 		DomestiaVendorChoice.LOGGER.info("Registering Domestia Vendor Choice events.");
+	}
+
+	private static void tryDropVendorScrap(Level level, Player player, BlockPos pos, BlockState state) {
+		if (level.isClientSide() || player.isCreative()) {
+			return;
+		}
+
+		if (!isVendorScrapOre(state)) {
+			return;
+		}
+
+		ItemStack toolStack = player.getMainHandItem();
+
+		if (!player.hasCorrectToolForDrops(state) || hasSilkTouch(level, toolStack)) {
+			return;
+		}
+
+		if (level.getRandom().nextFloat() >= VENDOR_SCRAP_DROP_CHANCE) {
+			return;
+		}
+
+		Block.popResource(level, pos, new ItemStack(ModItems.VENDOR_SCRAP));
+	}
+
+	private static boolean isVendorScrapOre(BlockState state) {
+		return state.is(Blocks.IRON_ORE)
+				|| state.is(Blocks.DEEPSLATE_IRON_ORE)
+				|| state.is(Blocks.COPPER_ORE)
+				|| state.is(Blocks.DEEPSLATE_COPPER_ORE)
+				|| state.is(Blocks.GOLD_ORE)
+				|| state.is(Blocks.DEEPSLATE_GOLD_ORE);
+	}
+
+	private static boolean hasSilkTouch(Level level, ItemStack stack) {
+		return EnchantmentHelper.getItemEnchantmentLevel(
+				level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH),
+				stack
+		) > 0;
 	}
 
 	private static boolean handleVendorMachineBreak(Level level, Player player, BlockPos pos, BlockEntity blockEntity) {

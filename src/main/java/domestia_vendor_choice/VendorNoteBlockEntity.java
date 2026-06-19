@@ -21,7 +21,8 @@ public class VendorNoteBlockEntity extends BlockEntity {
 	private static final String KEY_TITLE = "Title";
 	private static final String KEY_BODY = "Body";
 
-	public static final String DEFAULT_OWNER_NAME = "Owner";
+	public static final String DEFAULT_OWNER_NAME_KEY = "display.domestia_vendor_choice.owner.fallback";
+	public static final String DEFAULT_OWNER_NAME = "";
 	public static final int MAX_OWNER_NAME_LENGTH = 64;
 	public static final int MAX_TITLE_LENGTH = 32;
 	public static final int MAX_BODY_LENGTH = 4096;

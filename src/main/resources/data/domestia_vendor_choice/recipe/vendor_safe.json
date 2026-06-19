@@ -2,14 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "III",
-    "ICI",
-    "BBB"
+    "ISI",
+    "CSC",
+    "ISI"
   ],
   "key": {
     "I": "minecraft:iron_ingot",
-    "C": "minecraft:barrel",
-    "B": "minecraft:iron_block"
+    "S": "domestia_vendor_choice:vendor_scrap",
+    "C": "minecraft:chest"
   },
   "result": {
     "id": "domestia_vendor_choice:vendor_safe",

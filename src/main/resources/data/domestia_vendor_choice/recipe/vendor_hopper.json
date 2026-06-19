@@ -3,12 +3,13 @@
   "category": "redstone",
   "pattern": [
     "I I",
-    "ISI",
+    "SCS",
     " I "
   ],
   "key": {
     "I": "minecraft:iron_ingot",
-    "S": "domestia_vendor_choice:vendor_safe"
+    "S": "domestia_vendor_choice:vendor_scrap",
+    "C": "minecraft:chest"
   },
   "result": {
     "id": "domestia_vendor_choice:vendor_hopper",

@@ -29,11 +29,15 @@ public class VendorSafeBlockEntity extends BlockEntity implements Container, Wor
 	private static final String KEY_OWNER_NAME = "OwnerName";
 	private static final String KEY_DISPLAY_NAME = "DisplayName";
 
-	// Default front label. Used when the block item was not renamed on an anvil.
-	public static final String DEFAULT_DISPLAY_NAME = "Stash";
+	// Translation key for the default visible label. Blank stored values use this client-side label.
+	public static final String DEFAULT_DISPLAY_NAME_KEY = "display.domestia_vendor_choice.vendor_safe.default_label";
 
-	// Fallback text for legacy blocks that have OwnerUuid but no stored owner name.
-	public static final String DEFAULT_OWNER_NAME = "Owner";
+	// Translation key for unknown legacy owner names. Blank stored values use this client-side label.
+	public static final String DEFAULT_OWNER_NAME_KEY = "display.domestia_vendor_choice.owner.fallback";
+
+	// Empty stored defaults keep user-facing fallback text in lang files instead of NBT/code.
+	public static final String DEFAULT_DISPLAY_NAME = "";
+	public static final String DEFAULT_OWNER_NAME = "";
 
 	// Safe inventory layout. Double-chest capacity.
 	public static final int SAFE_SLOT_COUNT = 54;
@@ -405,7 +409,7 @@ public class VendorSafeBlockEntity extends BlockEntity implements Container, Wor
 			return;
 		}
 
-		if (!DEFAULT_OWNER_NAME.equals(this.ownerName)) {
+		if (this.ownerName != null && !this.ownerName.isBlank()) {
 			return;
 		}
 

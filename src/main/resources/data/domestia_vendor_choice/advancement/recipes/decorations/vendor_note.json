@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_writable_book": {
+    "has_vendor_scrap": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": "minecraft:writable_book"
+            "items": "domestia_vendor_choice:vendor_scrap"
           }
         ]
       }
