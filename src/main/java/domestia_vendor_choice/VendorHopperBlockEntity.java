@@ -10,8 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.permissions.Permission;
-import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
@@ -57,7 +55,6 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 
 	// Interaction constants.
 	private static final double STILL_VALID_MAX_DISTANCE_SQUARED = 64.0;
-	private static final Permission OPERATOR_PERMISSION = Permissions.COMMANDS_GAMEMASTER;
 
 	// Transfer constants. Vanilla hopper-like cadence: one item per cycle.
 	// The local cooldown is decremented on the ticks between transfer attempts.
@@ -1063,17 +1060,17 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 	}
 
 	public boolean hasOwner() {
-		return this.ownerUuid != null;
+		return VendorAccess.hasOwner(this.ownerUuid);
 	}
 
 	public boolean isOwner(UUID playerUuid) {
-		return this.ownerUuid != null && this.ownerUuid.equals(playerUuid);
+		return VendorAccess.isOwner(this.ownerUuid, playerUuid);
 	}
 
 	// Management means opening the private hopper container.
 	// Only the owner can access the contents.
 	public boolean canManage(Player player) {
-		if (!this.isOwner(player.getUUID())) {
+		if (!VendorAccess.canManage(this.ownerUuid, player)) {
 			return false;
 		}
 
@@ -1082,17 +1079,13 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 	}
 
 	// Breaking is administrative recovery.
-	// The owner can break the hopper, and operators can destroy it if needed.
+	// The owner can break the hopper, and administrators can destroy it if needed.
 	public boolean canBreak(Player player) {
-		if (this.isOwner(player.getUUID())) {
+		if (VendorAccess.canManage(this.ownerUuid, player)) {
 			this.updateOwnerNameFromPlayerIfNeeded(player);
 			return true;
 		}
 
-		return this.isOperator(player);
-	}
-
-	private boolean isOperator(Player player) {
-		return player.permissions().hasPermission(OPERATOR_PERMISSION);
+		return VendorAccess.isAdministrator(player);
 	}
 }

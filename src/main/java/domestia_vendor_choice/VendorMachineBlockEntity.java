@@ -11,8 +11,6 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.permissions.Permission;
-import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
@@ -56,7 +54,6 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 
 	// Interaction constants.
 	private static final double STILL_VALID_MAX_DISTANCE_SQUARED = 64.0;
-	private static final Permission OPERATOR_PERMISSION = Permissions.COMMANDS_GAMEMASTER;
 
 	// Transaction pulse constants.
 	private static final int TICKS_TRANSACTION_PULSE_DURATION = 4;
@@ -835,15 +832,15 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 	}
 
 	public boolean hasOwner() {
-		return this.ownerUuid != null;
+		return VendorAccess.hasOwner(this.ownerUuid);
 	}
 
 	public boolean isOwner(UUID playerUuid) {
-		return this.ownerUuid != null && this.ownerUuid.equals(playerUuid);
+		return VendorAccess.isOwner(this.ownerUuid, playerUuid);
 	}
 
 	public boolean canManage(Player player) {
-		if (!this.isOwner(player.getUUID())) {
+		if (!VendorAccess.canManage(this.ownerUuid, player)) {
 			return false;
 		}
 
@@ -852,15 +849,11 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 	}
 
 	public boolean canBreak(Player player) {
-		if (this.isOwner(player.getUUID())) {
+		if (VendorAccess.canManage(this.ownerUuid, player)) {
 			this.updateOwnerNameFromPlayerIfNeeded(player);
 			return true;
 		}
 
-		return this.isOperator(player);
-	}
-
-	private boolean isOperator(Player player) {
-		return player.permissions().hasPermission(OPERATOR_PERMISSION);
+		return VendorAccess.isAdministrator(player);
 	}
 }

@@ -331,7 +331,7 @@ public class VendorMachineSalesScreen extends AbstractContainerScreen<VendorMach
 		}
 
 		int stockCount = stockStack.getCount();
-		int vaultAcceptablePurchaseCount = this.menu.getVaultAcceptablePurchaseCount(priceStack);
+		int vaultAcceptablePurchaseCount = this.menu.getVaultAcceptablePurchaseCount(productIndex);
 
 		return Math.min(stockCount, vaultAcceptablePurchaseCount);
 	}

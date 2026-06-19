@@ -1,5 +1,6 @@
 package domestia_vendor_choice.client;
 
+import domestia_vendor_choice.DomestiaVendorChoice;
 import domestia_vendor_choice.VendorHopperMenu;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -29,12 +30,12 @@ public class VendorHopperScreen extends AbstractContainerScreen<VendorHopperMenu
 	private static final int POS_INVENTORY_LABEL_X = 8;
 	private static final int POS_INVENTORY_LABEL_Y = 75;
 
-	private static final Component LABEL_TEMPLATES = Component.literal("Templates");
-	private static final Component LABEL_BUFFER = Component.literal("Buffer");
+	private static final Component LABEL_TEMPLATES = Component.translatable("screen.domestia_vendor_choice.vendor_hopper.templates");
+	private static final Component LABEL_BUFFER = Component.translatable("screen.domestia_vendor_choice.vendor_hopper.buffer");
 
 	// Vendor Hopper control texture.
 	private static final Identifier TEXTURE_VENDOR_HOPPER_CONTROL = Identifier.fromNamespaceAndPath(
-			"domestia_vendor_choice",
+			DomestiaVendorChoice.MOD_ID,
 			"textures/gui/vendor_hopper_control.png"
 	);
 

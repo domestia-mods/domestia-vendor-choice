@@ -5,6 +5,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -12,16 +13,12 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 	public static final int ID_CHECKOUT_BUTTON_BASE = 1000;
 	private static final int ID_CHECKOUT_QUANTITY_MULTIPLIER = 100;
 
-	private static final int SIZE_SLOT = 18;
-
 	private static final int INDEX_STOCK_DISPLAY_START = 0;
 	private static final int INDEX_PRICE_DISPLAY_START = INDEX_STOCK_DISPLAY_START + VendorMachineBlockEntity.STOCK_SLOT_COUNT;
-	private static final int INDEX_VAULT_DISPLAY_START = INDEX_PRICE_DISPLAY_START + VendorMachineBlockEntity.PRICE_SLOT_COUNT;
 
 	private static final int SIZE_DISPLAY_SLOT_COUNT =
 			VendorMachineBlockEntity.STOCK_SLOT_COUNT
-					+ VendorMachineBlockEntity.PRICE_SLOT_COUNT
-					+ VendorMachineBlockEntity.VAULT_SLOT_COUNT;
+					+ VendorMachineBlockEntity.PRICE_SLOT_COUNT;
 
 	private static final int POS_HIDDEN_SLOT_X = -2000;
 	private static final int POS_HIDDEN_SLOT_Y = -2000;
@@ -34,11 +31,6 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 	private static final int POS_PLAYER_INVENTORY_Y = 139;
 	private static final int POS_PLAYER_HOTBAR_Y = 197;
 
-	private static final int LAYOUT_PLAYER_INVENTORY_COLUMNS = 9;
-	private static final int LAYOUT_PLAYER_INVENTORY_ROWS = 3;
-	private static final int INDEX_PLAYER_HOTBAR_START = 0;
-	private static final int INDEX_PLAYER_MAIN_INVENTORY_START = 9;
-
 	private static final int MENU_HIDDEN_DISPLAY_START = 0;
 	private static final int MENU_HIDDEN_DISPLAY_END = MENU_HIDDEN_DISPLAY_START + SIZE_DISPLAY_SLOT_COUNT;
 
@@ -47,10 +39,10 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 	private static final int MENU_PAYMENT_END = MENU_PAYMENT_START + 1;
 
 	private static final int MENU_PLAYER_MAIN_START = MENU_PAYMENT_END;
-	private static final int MENU_PLAYER_MAIN_END = MENU_PLAYER_MAIN_START + LAYOUT_PLAYER_INVENTORY_COLUMNS * LAYOUT_PLAYER_INVENTORY_ROWS;
+	private static final int MENU_PLAYER_MAIN_END = MENU_PLAYER_MAIN_START + VendorMenuSlots.PLAYER_MAIN_SLOT_COUNT;
 
 	private static final int MENU_PLAYER_HOTBAR_START = MENU_PLAYER_MAIN_END;
-	private static final int MENU_PLAYER_HOTBAR_END = MENU_PLAYER_HOTBAR_START + LAYOUT_PLAYER_INVENTORY_COLUMNS;
+	private static final int MENU_PLAYER_HOTBAR_END = MENU_PLAYER_HOTBAR_START + VendorMenuSlots.PLAYER_HOTBAR_SLOT_COUNT;
 
 	private static final int MENU_PLAYER_INVENTORY_START = MENU_PLAYER_MAIN_START;
 	private static final int MENU_PLAYER_INVENTORY_END = MENU_PLAYER_HOTBAR_END;
@@ -58,6 +50,7 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 	private final VendorMachineBlockEntity vendorMachineBlockEntity;
 	private final SimpleContainer displayItems = new SimpleContainer(SIZE_DISPLAY_SLOT_COUNT);
 	private final SimpleContainer paymentContainer = new SimpleContainer(1);
+	private final int[] vaultAcceptablePurchaseCounts = new int[VendorMachineBlockEntity.STOCK_SLOT_COUNT];
 
 	public VendorMachineSalesMenu(int containerId, Inventory playerInventory) {
 		this(containerId, playerInventory, null);
@@ -75,6 +68,7 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 		this.syncDisplayItemsFromVendor();
 
 		this.addHiddenDisplaySlots();
+		this.addVaultCapacityDataSlots();
 		this.addPaymentSlot();
 		this.addPlayerInventorySlots(playerInventory);
 	}
@@ -105,7 +99,7 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 		Container vendorInventory = this.vendorMachineBlockEntity.getInventory();
 
 		this.syncStockAndPriceDisplayItems(vendorInventory);
-		this.syncVaultDisplayItems(vendorInventory);
+		this.syncVaultAcceptablePurchaseCounts(vendorInventory);
 	}
 
 	private void syncStockAndPriceDisplayItems(Container vendorInventory) {
@@ -118,12 +112,52 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 		}
 	}
 
-	private void syncVaultDisplayItems(Container vendorInventory) {
+	private void syncVaultAcceptablePurchaseCounts(Container vendorInventory) {
+		for (int index = 0; index < VendorMachineBlockEntity.STOCK_SLOT_COUNT; index++) {
+			ItemStack priceStack = vendorInventory.getItem(VendorMachineBlockEntity.PRICE_SLOT_START + index);
+			this.vaultAcceptablePurchaseCounts[index] = this.calculateVaultAcceptablePurchaseCount(vendorInventory, priceStack);
+		}
+	}
+
+	private int calculateVaultAcceptablePurchaseCount(Container vendorInventory, ItemStack unitPaymentStack) {
+		if (unitPaymentStack.isEmpty()) {
+			return 0;
+		}
+
+		int unitPrice = unitPaymentStack.getCount();
+
+		if (unitPrice <= 0) {
+			return 0;
+		}
+
+		int acceptablePaymentItems = this.countAcceptablePaymentItemsInVendorVault(vendorInventory, unitPaymentStack);
+
+		return acceptablePaymentItems / unitPrice;
+	}
+
+	private int countAcceptablePaymentItemsInVendorVault(Container vendorInventory, ItemStack unitPaymentStack) {
+		int acceptablePaymentItems = 0;
+
 		for (int index = 0; index < VendorMachineBlockEntity.VAULT_SLOT_COUNT; index++) {
 			ItemStack vaultStack = vendorInventory.getItem(VendorMachineBlockEntity.VAULT_SLOT_START + index);
 
-			this.setDisplayItemIfChanged(INDEX_VAULT_DISPLAY_START + index, vaultStack);
+			if (vaultStack.isEmpty()) {
+				acceptablePaymentItems += unitPaymentStack.getMaxStackSize();
+				continue;
+			}
+
+			if (!ItemStack.isSameItemSameComponents(vaultStack, unitPaymentStack)) {
+				continue;
+			}
+
+			int freeSpace = vaultStack.getMaxStackSize() - vaultStack.getCount();
+
+			if (freeSpace > 0) {
+				acceptablePaymentItems += freeSpace;
+			}
 		}
+
+		return acceptablePaymentItems;
 	}
 
 	private void setDisplayItemIfChanged(int displaySlot, ItemStack sourceStack) {
@@ -160,6 +194,24 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 		}
 	}
 
+	private void addVaultCapacityDataSlots() {
+		for (int index = 0; index < VendorMachineBlockEntity.STOCK_SLOT_COUNT; index++) {
+			final int productIndex = index;
+
+			this.addDataSlot(new DataSlot() {
+				@Override
+				public int get() {
+					return VendorMachineSalesMenu.this.vaultAcceptablePurchaseCounts[productIndex];
+				}
+
+				@Override
+				public void set(int value) {
+					VendorMachineSalesMenu.this.vaultAcceptablePurchaseCounts[productIndex] = value;
+				}
+			});
+		}
+	}
+
 	private void addPaymentSlot() {
 		this.addSlot(new Slot(
 				this.paymentContainer,
@@ -170,32 +222,13 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 	}
 
 	private void addPlayerInventorySlots(Inventory playerInventory) {
-		this.addPlayerMainInventorySlots(playerInventory);
-		this.addPlayerHotbarSlots(playerInventory);
-	}
-
-	private void addPlayerMainInventorySlots(Inventory playerInventory) {
-		for (int row = 0; row < LAYOUT_PLAYER_INVENTORY_ROWS; row++) {
-			for (int column = 0; column < LAYOUT_PLAYER_INVENTORY_COLUMNS; column++) {
-				this.addSlot(new Slot(
-						playerInventory,
-						INDEX_PLAYER_MAIN_INVENTORY_START + column + row * LAYOUT_PLAYER_INVENTORY_COLUMNS,
-						POS_PLAYER_INVENTORY_X + column * SIZE_SLOT,
-						POS_PLAYER_INVENTORY_Y + row * SIZE_SLOT
-				));
-			}
-		}
-	}
-
-	private void addPlayerHotbarSlots(Inventory playerInventory) {
-		for (int column = 0; column < LAYOUT_PLAYER_INVENTORY_COLUMNS; column++) {
-			this.addSlot(new Slot(
-					playerInventory,
-					INDEX_PLAYER_HOTBAR_START + column,
-					POS_PLAYER_INVENTORY_X + column * SIZE_SLOT,
-					POS_PLAYER_HOTBAR_Y
-			));
-		}
+		VendorMenuSlots.addPlayerInventorySlots(
+				this::addSlot,
+				playerInventory,
+				POS_PLAYER_INVENTORY_X,
+				POS_PLAYER_INVENTORY_Y,
+				POS_PLAYER_HOTBAR_Y
+		);
 	}
 
 	public ItemStack getStockDisplayStack(int index) {
@@ -214,61 +247,20 @@ public class VendorMachineSalesMenu extends AbstractContainerMenu {
 		return this.displayItems.getItem(INDEX_PRICE_DISPLAY_START + index);
 	}
 
-	public ItemStack getVaultDisplayStack(int index) {
-		if (index < 0 || index >= VendorMachineBlockEntity.VAULT_SLOT_COUNT) {
-			return ItemStack.EMPTY;
-		}
-
-		return this.displayItems.getItem(INDEX_VAULT_DISPLAY_START + index);
-	}
-
 	public ItemStack getPaymentStack() {
 		return this.paymentContainer.getItem(INDEX_PAYMENT_SLOT);
 	}
 
-	public boolean canVaultAcceptPayment(ItemStack paymentStack) {
-		return this.getVaultAcceptablePurchaseCount(paymentStack) > 0;
+	public boolean canVaultAcceptPayment(int productIndex) {
+		return this.getVaultAcceptablePurchaseCount(productIndex) > 0;
 	}
 
-	public int getVaultAcceptablePurchaseCount(ItemStack unitPaymentStack) {
-		if (unitPaymentStack.isEmpty()) {
+	public int getVaultAcceptablePurchaseCount(int productIndex) {
+		if (productIndex < 0 || productIndex >= this.vaultAcceptablePurchaseCounts.length) {
 			return 0;
 		}
 
-		int unitPrice = unitPaymentStack.getCount();
-
-		if (unitPrice <= 0) {
-			return 0;
-		}
-
-		int acceptablePaymentItems = this.countAcceptablePaymentItemsInVault(unitPaymentStack);
-
-		return acceptablePaymentItems / unitPrice;
-	}
-
-	private int countAcceptablePaymentItemsInVault(ItemStack unitPaymentStack) {
-		int acceptablePaymentItems = 0;
-
-		for (int index = 0; index < VendorMachineBlockEntity.VAULT_SLOT_COUNT; index++) {
-			ItemStack vaultStack = this.getVaultDisplayStack(index);
-
-			if (vaultStack.isEmpty()) {
-				acceptablePaymentItems += unitPaymentStack.getMaxStackSize();
-				continue;
-			}
-
-			if (!ItemStack.isSameItemSameComponents(vaultStack, unitPaymentStack)) {
-				continue;
-			}
-
-			int freeSpace = vaultStack.getMaxStackSize() - vaultStack.getCount();
-
-			if (freeSpace > 0) {
-				acceptablePaymentItems += freeSpace;
-			}
-		}
-
-		return acceptablePaymentItems;
+		return this.vaultAcceptablePurchaseCounts[productIndex];
 	}
 
 	@Override

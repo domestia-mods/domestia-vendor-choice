@@ -3,7 +3,7 @@
   "id": "domestia_vendor_choice",
   "version": "${version}",
   "name": "Domestia Vendor Choice",
-  "description": "Owner-protected vendor machines and private vendor safes for Minecraft Fabric.",
+  "description": "Owner-protected vending, storage, Vendor Notes, and item logistics for Minecraft Fabric.",
   "authors": [
     "JimFixer"
   ],

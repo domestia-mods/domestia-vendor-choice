@@ -60,8 +60,8 @@ public class VendorMachineBlockEntityRenderer implements BlockEntityRenderer<Ven
 	// 0.0 = top edge of the back face.
 	// 1.0 = bottom edge of the back face.
 	// Smaller value means higher text.
-	private static final float POS_BACK_TEXT_OWNER_TOP_Y = 0.14F;
-	private static final float POS_BACK_TEXT_LABEL_TOP_Y = 0.22F;
+	private static final float POS_BACK_TEXT_OWNER_TOP_Y = 0.12F;
+	private static final float POS_BACK_TEXT_LABEL_TOP_Y = 0.20F;
 
 	// Back text scale per line.
 	private static final float SIZE_BACK_TEXT_OWNER_SCALE = 0.006F;

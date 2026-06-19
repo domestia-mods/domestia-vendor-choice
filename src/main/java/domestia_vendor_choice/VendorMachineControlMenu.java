@@ -9,9 +9,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class VendorMachineControlMenu extends AbstractContainerMenu {
-	// Base slot geometry.
-	private static final int SIZE_SLOT = 18;
-
 	// Vendor machine stock column.
 	private static final int POS_STOCK_SLOT_X = 8;
 	private static final int POS_STOCK_PRICE_SLOT_Y = 36;
@@ -29,12 +26,6 @@ public class VendorMachineControlMenu extends AbstractContainerMenu {
 	private static final int POS_PLAYER_INVENTORY_Y = 139;
 	private static final int POS_PLAYER_HOTBAR_Y = 197;
 
-	// Vanilla player inventory dimensions.
-	private static final int LAYOUT_PLAYER_INVENTORY_COLUMNS = 9;
-	private static final int LAYOUT_PLAYER_INVENTORY_ROWS = 3;
-	private static final int INDEX_PLAYER_HOTBAR_START = 0;
-	private static final int INDEX_PLAYER_MAIN_INVENTORY_START = 9;
-
 	// Menu slot index ranges.
 	// Registration order is: Vault -> Stock -> Price -> Player main inventory -> Player hotbar.
 	private static final int MENU_VAULT_START = 0;
@@ -50,10 +41,10 @@ public class VendorMachineControlMenu extends AbstractContainerMenu {
 	private static final int MENU_MACHINE_END = MENU_PRICE_END;
 
 	private static final int MENU_PLAYER_MAIN_START = MENU_MACHINE_END;
-	private static final int MENU_PLAYER_MAIN_END = MENU_PLAYER_MAIN_START + LAYOUT_PLAYER_INVENTORY_COLUMNS * LAYOUT_PLAYER_INVENTORY_ROWS;
+	private static final int MENU_PLAYER_MAIN_END = MENU_PLAYER_MAIN_START + VendorMenuSlots.PLAYER_MAIN_SLOT_COUNT;
 
 	private static final int MENU_PLAYER_HOTBAR_START = MENU_PLAYER_MAIN_END;
-	private static final int MENU_PLAYER_HOTBAR_END = MENU_PLAYER_HOTBAR_START + LAYOUT_PLAYER_INVENTORY_COLUMNS;
+	private static final int MENU_PLAYER_HOTBAR_END = MENU_PLAYER_HOTBAR_START + VendorMenuSlots.PLAYER_HOTBAR_SLOT_COUNT;
 
 	private static final int MENU_PLAYER_INVENTORY_START = MENU_PLAYER_MAIN_START;
 	private static final int MENU_PLAYER_INVENTORY_END = MENU_PLAYER_HOTBAR_END;
@@ -89,7 +80,7 @@ public class VendorMachineControlMenu extends AbstractContainerMenu {
 					vendorInventory,
 					VendorMachineBlockEntity.STOCK_SLOT_START + row,
 					POS_STOCK_SLOT_X,
-					POS_STOCK_PRICE_SLOT_Y + row * SIZE_SLOT
+					POS_STOCK_PRICE_SLOT_Y + row * VendorMenuSlots.SLOT_SIZE
 			));
 		}
 	}
@@ -100,7 +91,7 @@ public class VendorMachineControlMenu extends AbstractContainerMenu {
 					vendorInventory,
 					VendorMachineBlockEntity.PRICE_SLOT_START + row,
 					POS_PRICE_SLOT_X,
-					POS_STOCK_PRICE_SLOT_Y + row * SIZE_SLOT
+					POS_STOCK_PRICE_SLOT_Y + row * VendorMenuSlots.SLOT_SIZE
 			));
 		}
 	}
@@ -113,39 +104,20 @@ public class VendorMachineControlMenu extends AbstractContainerMenu {
 			this.addSlot(new Slot(
 					vendorInventory,
 					VendorMachineBlockEntity.VAULT_SLOT_START + vaultSlotIndex,
-					POS_VAULT_SLOT_X + column * SIZE_SLOT,
-					POS_VAULT_SLOT_Y + row * SIZE_SLOT
+					POS_VAULT_SLOT_X + column * VendorMenuSlots.SLOT_SIZE,
+					POS_VAULT_SLOT_Y + row * VendorMenuSlots.SLOT_SIZE
 			));
 		}
 	}
 
 	private void addPlayerInventorySlots(Inventory playerInventory) {
-		this.addPlayerMainInventorySlots(playerInventory);
-		this.addPlayerHotbarSlots(playerInventory);
-	}
-
-	private void addPlayerMainInventorySlots(Inventory playerInventory) {
-		for (int row = 0; row < LAYOUT_PLAYER_INVENTORY_ROWS; row++) {
-			for (int column = 0; column < LAYOUT_PLAYER_INVENTORY_COLUMNS; column++) {
-				this.addSlot(new Slot(
-						playerInventory,
-						INDEX_PLAYER_MAIN_INVENTORY_START + column + row * LAYOUT_PLAYER_INVENTORY_COLUMNS,
-						POS_PLAYER_INVENTORY_X + column * SIZE_SLOT,
-						POS_PLAYER_INVENTORY_Y + row * SIZE_SLOT
-				));
-			}
-		}
-	}
-
-	private void addPlayerHotbarSlots(Inventory playerInventory) {
-		for (int column = 0; column < LAYOUT_PLAYER_INVENTORY_COLUMNS; column++) {
-			this.addSlot(new Slot(
-					playerInventory,
-					INDEX_PLAYER_HOTBAR_START + column,
-					POS_PLAYER_INVENTORY_X + column * SIZE_SLOT,
-					POS_PLAYER_HOTBAR_Y
-			));
-		}
+		VendorMenuSlots.addPlayerInventorySlots(
+				this::addSlot,
+				playerInventory,
+				POS_PLAYER_INVENTORY_X,
+				POS_PLAYER_INVENTORY_Y,
+				POS_PLAYER_HOTBAR_Y
+		);
 	}
 
 	public VendorMachineBlockEntity getVendorMachineBlockEntity() {

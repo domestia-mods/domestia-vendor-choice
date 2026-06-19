@@ -5,8 +5,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.permissions.Permission;
-import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -27,8 +25,6 @@ public class VendorStandBlockEntity extends BlockEntity {
 	public static final int MAX_OWNER_NAME_LENGTH = 64;
 	public static final int MAX_TITLE_LENGTH = 32;
 	public static final int MAX_BODY_LENGTH = 4096;
-
-	private static final Permission ADMINISTRATOR_PERMISSION = Permissions.COMMANDS_GAMEMASTER;
 
 	private UUID ownerUuid;
 	private String ownerName = DEFAULT_OWNER_NAME;
@@ -133,15 +129,15 @@ public class VendorStandBlockEntity extends BlockEntity {
 	}
 
 	public boolean hasOwner() {
-		return this.ownerUuid != null;
+		return VendorAccess.hasOwner(this.ownerUuid);
 	}
 
 	public boolean isOwner(UUID playerUuid) {
-		return this.ownerUuid != null && this.ownerUuid.equals(playerUuid);
+		return VendorAccess.isOwner(this.ownerUuid, playerUuid);
 	}
 
 	public boolean canManage(Player player) {
-		if (!this.isOwner(player.getUUID())) {
+		if (!VendorAccess.canManage(this.ownerUuid, player)) {
 			return false;
 		}
 
@@ -150,12 +146,12 @@ public class VendorStandBlockEntity extends BlockEntity {
 	}
 
 	public boolean canBreak(Player player) {
-		if (this.isOwner(player.getUUID())) {
+		if (VendorAccess.canManage(this.ownerUuid, player)) {
 			this.updateOwnerNameFromPlayerIfNeeded(player);
 			return true;
 		}
 
-		return player.permissions().hasPermission(ADMINISTRATOR_PERMISSION);
+		return VendorAccess.isAdministrator(player);
 	}
 
 	private void updateOwnerNameFromPlayerIfNeeded(Player player) {

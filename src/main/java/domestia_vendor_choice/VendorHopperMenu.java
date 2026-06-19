@@ -11,9 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class VendorHopperMenu extends AbstractContainerMenu {
-	// Base slot geometry.
-	private static final int SIZE_SLOT = 18;
-
 	// Vendor Hopper control layout.
 	private static final int POS_FILTER_SLOTS_X = 62;
 	private static final int POS_FILTER_SLOTS_Y = 30;
@@ -24,12 +21,6 @@ public class VendorHopperMenu extends AbstractContainerMenu {
 	private static final int POS_PLAYER_INVENTORY_Y = 85;
 	private static final int POS_PLAYER_HOTBAR_Y = 143;
 
-	// Vanilla player inventory dimensions.
-	private static final int LAYOUT_PLAYER_INVENTORY_COLUMNS = 9;
-	private static final int LAYOUT_PLAYER_INVENTORY_ROWS = 3;
-	private static final int INDEX_PLAYER_HOTBAR_START = 0;
-	private static final int INDEX_PLAYER_MAIN_INVENTORY_START = 9;
-
 	// Menu slot index ranges.
 	// Registration order is: Template slots -> Buffer slots -> Player main inventory -> Player hotbar.
 	private static final int MENU_TEMPLATE_START = 0;
@@ -39,10 +30,10 @@ public class VendorHopperMenu extends AbstractContainerMenu {
 	private static final int MENU_BUFFER_END = MENU_BUFFER_START + VendorHopperBlockEntity.BUFFER_SLOT_COUNT;
 
 	private static final int MENU_PLAYER_MAIN_START = MENU_BUFFER_END;
-	private static final int MENU_PLAYER_MAIN_END = MENU_PLAYER_MAIN_START + LAYOUT_PLAYER_INVENTORY_COLUMNS * LAYOUT_PLAYER_INVENTORY_ROWS;
+	private static final int MENU_PLAYER_MAIN_END = MENU_PLAYER_MAIN_START + VendorMenuSlots.PLAYER_MAIN_SLOT_COUNT;
 
 	private static final int MENU_PLAYER_HOTBAR_START = MENU_PLAYER_MAIN_END;
-	private static final int MENU_PLAYER_HOTBAR_END = MENU_PLAYER_HOTBAR_START + LAYOUT_PLAYER_INVENTORY_COLUMNS;
+	private static final int MENU_PLAYER_HOTBAR_END = MENU_PLAYER_HOTBAR_START + VendorMenuSlots.PLAYER_HOTBAR_SLOT_COUNT;
 
 	private static final int MENU_PLAYER_INVENTORY_START = MENU_PLAYER_MAIN_START;
 	private static final int MENU_PLAYER_INVENTORY_END = MENU_PLAYER_HOTBAR_END;
@@ -75,7 +66,7 @@ public class VendorHopperMenu extends AbstractContainerMenu {
 			this.addSlot(new TemplateSlot(
 					hopperInventory,
 					VendorHopperBlockEntity.TEMPLATE_SLOT_START + slot,
-					POS_FILTER_SLOTS_X + slot * SIZE_SLOT,
+					POS_FILTER_SLOTS_X + slot * VendorMenuSlots.SLOT_SIZE,
 					POS_FILTER_SLOTS_Y
 			));
 		}
@@ -86,39 +77,20 @@ public class VendorHopperMenu extends AbstractContainerMenu {
 			this.addSlot(new Slot(
 					hopperInventory,
 					VendorHopperBlockEntity.BUFFER_SLOT_START + slot,
-					POS_FILTER_SLOTS_X + slot * SIZE_SLOT,
+					POS_FILTER_SLOTS_X + slot * VendorMenuSlots.SLOT_SIZE,
 					POS_BUFFER_SLOTS_Y
 			));
 		}
 	}
 
 	private void addPlayerInventorySlots(final Inventory playerInventory) {
-		this.addPlayerMainInventorySlots(playerInventory);
-		this.addPlayerHotbarSlots(playerInventory);
-	}
-
-	private void addPlayerMainInventorySlots(final Inventory playerInventory) {
-		for (int row = 0; row < LAYOUT_PLAYER_INVENTORY_ROWS; row++) {
-			for (int column = 0; column < LAYOUT_PLAYER_INVENTORY_COLUMNS; column++) {
-				this.addSlot(new Slot(
-						playerInventory,
-						INDEX_PLAYER_MAIN_INVENTORY_START + column + row * LAYOUT_PLAYER_INVENTORY_COLUMNS,
-						POS_PLAYER_INVENTORY_X + column * SIZE_SLOT,
-						POS_PLAYER_INVENTORY_Y + row * SIZE_SLOT
-				));
-			}
-		}
-	}
-
-	private void addPlayerHotbarSlots(final Inventory playerInventory) {
-		for (int column = 0; column < LAYOUT_PLAYER_INVENTORY_COLUMNS; column++) {
-			this.addSlot(new Slot(
-					playerInventory,
-					INDEX_PLAYER_HOTBAR_START + column,
-					POS_PLAYER_INVENTORY_X + column * SIZE_SLOT,
-					POS_PLAYER_HOTBAR_Y
-			));
-		}
+		VendorMenuSlots.addPlayerInventorySlots(
+				this::addSlot,
+				playerInventory,
+				POS_PLAYER_INVENTORY_X,
+				POS_PLAYER_INVENTORY_Y,
+				POS_PLAYER_HOTBAR_Y
+		);
 	}
 
 	@Override

@@ -66,6 +66,7 @@ public class VendorStandScreen extends Screen {
 	private static final Component BUTTON_SAVE = Component.translatable("screen.domestia_vendor_choice.vendor_stand.save");
 	private static final Component BUTTON_CANCEL = Component.translatable("screen.domestia_vendor_choice.vendor_stand.cancel");
 	private static final Component BUTTON_CLOSE = Component.translatable("screen.domestia_vendor_choice.vendor_stand.close");
+	private static final String ID_AUTHOR_BY = "screen.domestia_vendor_choice.vendor_stand.by";
 
 	private static final Identifier TEXTURE_VENDOR_NOTE_CONTROL = Identifier.fromNamespaceAndPath(
 			DomestiaVendorChoice.MOD_ID,
@@ -432,7 +433,7 @@ public class VendorStandScreen extends Screen {
 		this.renderTitle(graphics);
 		this.renderScaledCenteredText(
 				graphics,
-				Component.literal("by " + this.payload.ownerName()),
+				Component.translatable(ID_AUTHOR_BY, this.payload.ownerName()),
 				this.toScreenX(AUTHOR_AREA_X),
 				this.toScreenY(AUTHOR_AREA_Y),
 				this.scaleX(AUTHOR_AREA_WIDTH),
