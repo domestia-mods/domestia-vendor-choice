@@ -1,0 +1,20 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_writable_book": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:writable_book"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "recipes": [
+      "domestia_vendor_choice:vendor_stand"
+    ]
+  }
+}

@@ -22,7 +22,7 @@
 
 **Domestia Vendor Choice** is a Fabric mod for Minecraft focused on player-to-player economy.
 
-It adds protected commercial infrastructure for multiplayer survival servers: vending machines, private storage, and owner-aware item logistics.
+It adds protected commercial infrastructure for multiplayer survival servers: vending machines, private storage, owner-aware item logistics, and player-written Vendor notes.
 
 The mod is designed for players who want to build shops, manage stock, collect payments, and automate trading systems while preserving ownership and controlled access.
 
@@ -32,6 +32,7 @@ The mod is designed for players who want to build shops, manage stock, collect p
 - Player-operated vending machines.
 - Protected commercial storage.
 - Private logistics for shop infrastructure.
+- Protected player-written Vendor notes for shop labels, notices, and public information.
 - Purchase-triggered redstone transaction pulse.
 - Vanilla-compatible interfaces and survival-oriented crafting.
 - PBR-oriented block textures with normal and specular maps.
@@ -43,6 +44,7 @@ Domestia Vendor Choice currently includes:
 - **Vendor Machine** — a player-owned vending machine for direct item exchange.
 - **Vendor Safe** — protected private storage for shop supplies, revenue, and logistics.
 - **Vendor Hopper** — owner-aware item logistics for Vendor infrastructure and intentional container connections.
+- **Vendor Note** — an owner-protected note stand for public read-only shop information and player-written notices.
 
 Detailed behavior, layouts, recipes, and access rules are documented in the project wiki.
 
@@ -77,7 +79,7 @@ For exact version changes, see:
 
 ## Status
 
-Beta.
+Released.
 
 This mod is released and playable, but it is still being tested and balanced on the Domestia server. Recipes, block behavior, and documentation may continue to change as gameplay balance is refined.
 

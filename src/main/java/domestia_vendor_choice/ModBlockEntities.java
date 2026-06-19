@@ -25,6 +25,12 @@ public class ModBlockEntities {
 			FabricBlockEntityTypeBuilder.create(VendorHopperBlockEntity::new, ModBlocks.VENDOR_HOPPER).build()
 	);
 
+	public static final BlockEntityType<VendorStandBlockEntity> VENDOR_STAND = Registry.register(
+			BuiltInRegistries.BLOCK_ENTITY_TYPE,
+			Identifier.fromNamespaceAndPath(DomestiaVendorChoice.MOD_ID, "vendor_stand"),
+			FabricBlockEntityTypeBuilder.create(VendorStandBlockEntity::new, ModBlocks.VENDOR_STAND).build()
+	);
+
 	public static void initialize() {
 		DomestiaVendorChoice.LOGGER.info("Registering Domestia Vendor Choice block entities.");
 	}

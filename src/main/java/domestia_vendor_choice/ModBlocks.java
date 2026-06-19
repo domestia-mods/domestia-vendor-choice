@@ -45,11 +45,32 @@ public class ModBlocks {
 			true
 	);
 
+	public static final Block VENDOR_STAND = register(
+			"vendor_stand",
+			VendorStandBlock::new,
+			BlockBehaviour.Properties.of()
+					.strength(2.5f, 3.0f)
+					.sound(SoundType.WOOD)
+					.noOcclusion(),
+			new Item.Properties()
+					.stacksTo(1)
+					.component(ModDataComponents.VENDOR_STAND_DATA, VendorStandData.EMPTY)
+	);
+
 	private static Block register(
 			String name,
 			Function<BlockBehaviour.Properties, Block> blockFactory,
 			BlockBehaviour.Properties settings,
 			boolean shouldRegisterItem
+	) {
+		return register(name, blockFactory, settings, shouldRegisterItem ? new Item.Properties() : null);
+	}
+
+	private static Block register(
+			String name,
+			Function<BlockBehaviour.Properties, Block> blockFactory,
+			BlockBehaviour.Properties settings,
+			Item.Properties itemProperties
 	) {
 		ResourceKey<Block> blockKey = ResourceKey.create(
 				Registries.BLOCK,
@@ -58,14 +79,14 @@ public class ModBlocks {
 
 		Block block = blockFactory.apply(settings.setId(blockKey));
 
-		if (shouldRegisterItem) {
-			registerBlockItem(name, block);
+		if (itemProperties != null) {
+			registerBlockItem(name, block, itemProperties);
 		}
 
 		return Registry.register(BuiltInRegistries.BLOCK, blockKey, block);
 	}
 
-	private static void registerBlockItem(String name, Block block) {
+	private static void registerBlockItem(String name, Block block, Item.Properties properties) {
 		ResourceKey<Item> itemKey = ResourceKey.create(
 				Registries.ITEM,
 				Identifier.fromNamespaceAndPath(DomestiaVendorChoice.MOD_ID, name)
@@ -73,7 +94,7 @@ public class ModBlocks {
 
 		BlockItem blockItem = new BlockItem(
 				block,
-				new Item.Properties()
+				properties
 						.setId(itemKey)
 						.useBlockDescriptionPrefix()
 		);
@@ -86,6 +107,7 @@ public class ModBlocks {
 			output.accept(VENDOR_MACHINE.asItem());
 			output.accept(VENDOR_SAFE.asItem());
 			output.accept(VENDOR_HOPPER.asItem());
+			output.accept(VENDOR_STAND.asItem());
 		});
 
 		DomestiaVendorChoice.LOGGER.info("Registering Domestia Vendor Choice blocks.");

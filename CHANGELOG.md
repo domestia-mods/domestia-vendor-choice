@@ -2,6 +2,24 @@
 
 ## Released
 
+## 1.3.1
+
+### Added
+
+- Added Vendor Note, an owner-authored public note block with floor and wall variants.
+- Vendor Note supports owner-only editing, public read-only viewing, and persistent owner, title, and body data.
+
+### Changed
+
+- Vendor Note now uses a custom textured text interface for editing and reading notes.
+- Improved Vendor Note model orientation, item rendering, text rendering, and interaction shapes.
+
+### Fixed
+
+- Fixed Vendor Stand interaction issues on the tilted floor surface.
+- Fixed Vendor Machine label text visibility in low light.
+- Fixed Vendor Machine front display item orientation for asymmetric item models.
+
 ## 1.2.3
 
 ### Added

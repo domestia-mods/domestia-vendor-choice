@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "LGL",
+    "SWS",
+    "PPP"
+  ],
+  "key": {
+    "L": "#minecraft:planks",
+    "G": "minecraft:glass",
+    "S": "minecraft:stick",
+    "W": "minecraft:writable_book",
+    "P": "#minecraft:wooden_slabs"
+  },
+  "result": {
+    "id": "domestia_vendor_choice:vendor_stand",
+    "count": 1
+  }
+}

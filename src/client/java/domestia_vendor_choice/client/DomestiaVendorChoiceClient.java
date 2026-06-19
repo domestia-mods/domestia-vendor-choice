@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 public class DomestiaVendorChoiceClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		ModClientNetworking.initialize();
 		this.registerScreens();
 		this.registerBlockEntityRenderers();
 	}
@@ -44,6 +45,11 @@ public class DomestiaVendorChoiceClient implements ClientModInitializer {
 		BlockEntityRenderers.register(
 				ModBlockEntities.VENDOR_SAFE,
 				VendorSafeBlockEntityRenderer::new
+		);
+
+		BlockEntityRenderers.register(
+				ModBlockEntities.VENDOR_STAND,
+				VendorStandBlockEntityRenderer::new
 		);
 	}
 }

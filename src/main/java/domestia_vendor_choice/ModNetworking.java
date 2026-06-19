@@ -1,0 +1,60 @@
+package domestia_vendor_choice;
+
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.entity.BlockEntity;
+
+public final class ModNetworking {
+	private static final double MAX_INTERACTION_DISTANCE_SQUARED = 64.0D;
+
+	private ModNetworking() {
+	}
+
+	public static void initialize() {
+		PayloadTypeRegistry.clientboundPlay().register(VendorStandOpenPayload.TYPE, VendorStandOpenPayload.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(VendorStandSavePayload.TYPE, VendorStandSavePayload.CODEC);
+
+		ServerPlayNetworking.registerGlobalReceiver(VendorStandSavePayload.TYPE, (payload, context) -> {
+			ServerPlayer player = context.player();
+			BlockPos pos = payload.pos();
+
+			if (!isWithinInteractionDistance(player, pos)) {
+				return;
+			}
+
+			BlockEntity blockEntity = player.level().getBlockEntity(pos);
+
+			if (!(blockEntity instanceof VendorStandBlockEntity vendorStandBlockEntity)) {
+				return;
+			}
+
+			vendorStandBlockEntity.updateText(player, payload.title(), payload.body());
+		});
+
+		DomestiaVendorChoice.LOGGER.info("Registering Domestia Vendor Choice networking.");
+	}
+
+	public static void openVendorStand(ServerPlayer player, VendorStandBlockEntity vendorStandBlockEntity) {
+		boolean editable = vendorStandBlockEntity.canManage(player);
+
+		ServerPlayNetworking.send(
+				player,
+				new VendorStandOpenPayload(
+						vendorStandBlockEntity.getBlockPos(),
+						vendorStandBlockEntity.getOwnerName(),
+						vendorStandBlockEntity.getTitleText(),
+						vendorStandBlockEntity.getBodyText(),
+						editable
+				)
+		);
+	}
+
+	private static boolean isWithinInteractionDistance(ServerPlayer player, BlockPos pos) {
+		double deltaX = player.getX() - (pos.getX() + 0.5D);
+		double deltaY = player.getY() - (pos.getY() + 0.5D);
+		double deltaZ = player.getZ() - (pos.getZ() + 0.5D);
+		return deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ <= MAX_INTERACTION_DISTANCE_SQUARED;
+	}
+}

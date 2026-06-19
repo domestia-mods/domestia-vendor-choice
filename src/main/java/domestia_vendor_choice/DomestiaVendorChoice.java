@@ -11,9 +11,11 @@ public class DomestiaVendorChoice implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ModDataComponents.initialize();
 		ModBlocks.initialize();
 		ModBlockEntities.initialize();
 		ModMenus.initialize();
+		ModNetworking.initialize();
 		ModEvents.initialize();
 
 		LOGGER.info("Domestia Vendor Choice initialized.");

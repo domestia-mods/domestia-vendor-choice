@@ -6,6 +6,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 
@@ -14,11 +15,13 @@ public class ModEvents {
 	private static final String ID_MESSAGE_MACHINE_BREAK_DENIED = "message.domestia_vendor_choice.vendor_machine_break_denied";
 	private static final String ID_MESSAGE_SAFE_BREAK_DENIED = "message.domestia_vendor_choice.vendor_safe_break_denied";
 	private static final String ID_MESSAGE_HOPPER_BREAK_DENIED = "message.domestia_vendor_choice.vendor_hopper_break_denied";
+	private static final String ID_MESSAGE_STAND_BREAK_DENIED = "message.domestia_vendor_choice.vendor_stand_break_denied";
 
 	// Feedback messages.
 	private static final Component MESSAGE_MACHINE_BREAK_DENIED = Component.translatable(ID_MESSAGE_MACHINE_BREAK_DENIED);
 	private static final Component MESSAGE_SAFE_BREAK_DENIED = Component.translatable(ID_MESSAGE_SAFE_BREAK_DENIED);
 	private static final Component MESSAGE_HOPPER_BREAK_DENIED = Component.translatable(ID_MESSAGE_HOPPER_BREAK_DENIED);
+	private static final Component MESSAGE_STAND_BREAK_DENIED = Component.translatable(ID_MESSAGE_STAND_BREAK_DENIED);
 
 	public static void initialize() {
 		PlayerBlockBreakEvents.BEFORE.register((level, player, pos, state, blockEntity) -> {
@@ -32,6 +35,10 @@ public class ModEvents {
 
 			if (state.is(ModBlocks.VENDOR_HOPPER)) {
 				return handleVendorHopperBreak(level, player, pos, blockEntity);
+			}
+
+			if (state.is(ModBlocks.VENDOR_STAND)) {
+				return handleVendorStandBreak(level, player, pos, blockEntity);
 			}
 
 			return true;
@@ -82,6 +89,23 @@ public class ModEvents {
 		}
 
 		handlePrivateContainerBreak(level, player, pos, vendorHopperBlockEntity);
+
+		return true;
+	}
+
+	private static boolean handleVendorStandBreak(Level level, Player player, BlockPos pos, BlockEntity blockEntity) {
+		if (!(blockEntity instanceof VendorStandBlockEntity vendorStandBlockEntity)) {
+			return true;
+		}
+
+		if (!vendorStandBlockEntity.canBreak(player)) {
+			player.sendSystemMessage(MESSAGE_STAND_BREAK_DENIED);
+			return false;
+		}
+
+		if (!level.isClientSide()) {
+			Block.popResource(level, pos, vendorStandBlockEntity.createPreservedItemStack());
+		}
 
 		return true;
 	}

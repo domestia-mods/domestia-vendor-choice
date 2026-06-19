@@ -262,7 +262,7 @@ public class VendorMachineBlockEntityRenderer implements BlockEntityRenderer<Ven
 				Component.literal(text).getVisualOrderText(),
 				false,
 				Font.DisplayMode.NORMAL,
-				renderState.lightCoords,
+				LIGHT_FULL_BRIGHT,
 				color,
 				BACKGROUND_COLOR_NONE,
 				OUTLINE_COLOR_NONE
@@ -315,7 +315,7 @@ public class VendorMachineBlockEntityRenderer implements BlockEntityRenderer<Ven
 
 		// FIXED context uses item-frame-like orientation.
 		// Rotate so the item plane faces outward from the machine front.
-		poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+		//poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
 
 		poseStack.scale(SIZE_DISPLAY_ITEM_SCALE, SIZE_DISPLAY_ITEM_SCALE, SIZE_DISPLAY_ITEM_SCALE);
 	}
