@@ -8,6 +8,9 @@
 
 - Added Vendor Holo Display, an owner-protected holographic display for billboards, shop signs, and item previews.
 
+### Fixed
+
+- Fixed several minor visual and behavior issues across existing Vendor blocks.
 
 ## 1.4.1
 
