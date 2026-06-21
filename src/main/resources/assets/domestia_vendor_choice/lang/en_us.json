@@ -3,22 +3,13 @@
   "modmenu.nameTranslation.domestia_vendor_choice": "Domestia Vendor Choice",
   "modmenu.summaryTranslation.domestia_vendor_choice": "Owner-protected vending, storage, Vendor Notes, and logistics.",
   "modmenu.descriptionTranslation.domestia_vendor_choice": "Domestia Vendor Choice adds owner-protected Vendor Machines, Vendor Safes, Vendor Notes, and Vendor Hoppers for multiplayer survival worlds. Vendor Machines support configurable stock, prices, protected vault storage, front item display, sales UI feedback, vanilla sound effects, and owner-only control access. Vendor Safes provide private barrel-style storage with owner-only access and administrative recovery rules. Vendor Notes provide owner-edited public notices for shops and shared spaces. Vendor Hoppers provide owner-aware item logistics for protected vendor systems. Source code and issue tracking are available on GitHub: https://github.com/domestia-mods/domestia-vendor-choice. If this mod made your server a little better, buy me a coffee: https://ko-fi.com/Z5X220SWVK",
-
-
-  
   "_comment.domestia_vendor_choice.shared": "Shared display labels, renderer fallbacks, and generic access messages.",
   "display.domestia_vendor_choice.owner.fallback": "Owner",
   "display.domestia_vendor_choice.trim_suffix": "...",
   "message.domestia_vendor_choice.access_denied": "Access denied",
-
-
-
   "_comment.domestia_vendor_choice.vendor_scrap": "Vendor Scrap item name and tooltip.",
   "item.domestia_vendor_choice.vendor_scrap": "Vendor Scrap",
   "item.domestia_vendor_choice.vendor_scrap.tooltip": "Recovered from metal.",
-
-
-
   "_comment.domestia_vendor_choice.vendor_machine": "Vendor Machine block name, default display label, screens, sales feedback, and messages.",
   "block.domestia_vendor_choice.vendor_machine": "Vendor Machine",
   "display.domestia_vendor_choice.vendor_machine.default_label": "Sales",
@@ -43,17 +34,11 @@
   "screen.domestia_vendor_choice.vendor_machine_sales.message.no_stock": "No stock",
   "screen.domestia_vendor_choice.vendor_machine_sales.message.thank_you": "Thank you!",
   "message.domestia_vendor_choice.vendor_machine.break_denied": "You cannot break this Vendor Machine.",
-
-
-
   "_comment.domestia_vendor_choice.vendor_safe": "Vendor Safe block name, default display label, screen title, and messages.",
   "block.domestia_vendor_choice.vendor_safe": "Vendor Safe",
   "display.domestia_vendor_choice.vendor_safe.default_label": "Stash",
   "screen.domestia_vendor_choice.vendor_safe": "Vendor Safe",
   "message.domestia_vendor_choice.vendor_safe.break_denied": "You cannot break this Vendor Safe.",
-
-
-
   "_comment.domestia_vendor_choice.vendor_hopper": "Vendor Hopper block name, default display label, screen labels, and messages.",
   "block.domestia_vendor_choice.vendor_hopper": "Vendor Hopper",
   "display.domestia_vendor_choice.vendor_hopper.default_label": "Hopper",
@@ -61,9 +46,24 @@
   "screen.domestia_vendor_choice.vendor_hopper.templates": "Templates",
   "screen.domestia_vendor_choice.vendor_hopper.buffer": "Buffer",
   "message.domestia_vendor_choice.vendor_hopper.break_denied": "You cannot break this Vendor Hopper.",
-
-
-
+  "_comment.domestia_vendor_choice.vendor_holo_display": "Vendor Holo Display block name, control screen labels, and messages.",
+  "block.domestia_vendor_choice.vendor_holo_display": "Vendor Holo Display",
+  "screen.domestia_vendor_choice.vendor_holo_display_control": "Vendor Holo Display Control",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.image": "IMG",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.board_size": "Board size",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.dye": "Dye",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.row_size": "Row size",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.line": "Line %s",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.font_size.small": "S",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.font_size.normal": "M",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.font_size.large": "L",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.font_size.auto": "A",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.board_size.small": "3",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.board_size.medium": "5",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.board_size.large": "7",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.save": "Save",
+  "screen.domestia_vendor_choice.vendor_holo_display_control.cancel": "Cancel",
+  "message.domestia_vendor_choice.vendor_holo_display.break_denied": "You cannot break this Vendor Holo Display.",
   "_comment.domestia_vendor_choice.vendor_note": "Vendor Note block name, editor labels, renderer fallback, and messages.",
   "block.domestia_vendor_choice.vendor_note": "Vendor Note",
   "screen.domestia_vendor_choice.vendor_note": "Vendor Note",

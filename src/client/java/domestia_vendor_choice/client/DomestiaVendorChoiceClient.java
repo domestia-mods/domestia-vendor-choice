@@ -10,6 +10,7 @@ public class DomestiaVendorChoiceClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		ModClientNetworking.initialize();
+		VendorHoloDisplayTextWorldRenderer.initialize();
 		this.registerScreens();
 		this.registerBlockEntityRenderers();
 	}
@@ -34,6 +35,11 @@ public class DomestiaVendorChoiceClient implements ClientModInitializer {
 				ModMenus.VENDOR_HOPPER,
 				VendorHopperScreen::new
 		);
+
+		MenuScreens.register(
+				ModMenus.VENDOR_HOLO_DISPLAY_CONTROL,
+				VendorHoloDisplayScreen::new
+		);
 	}
 
 	private void registerBlockEntityRenderers() {
@@ -50,6 +56,11 @@ public class DomestiaVendorChoiceClient implements ClientModInitializer {
 		BlockEntityRenderers.register(
 				ModBlockEntities.VENDOR_NOTE,
 				VendorNoteBlockEntityRenderer::new
+		);
+
+		BlockEntityRenderers.register(
+				ModBlockEntities.VENDOR_HOLO_DISPLAY,
+				VendorHoloDisplayBlockEntityRenderer::new
 		);
 	}
 }

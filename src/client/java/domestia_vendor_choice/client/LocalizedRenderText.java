@@ -16,6 +16,10 @@ final class LocalizedRenderText {
 		return text;
 	}
 
+	public static String ellipsis() {
+		return I18n.get(ID_TRIM_SUFFIX);
+	}
+
 	public static String trim(String text, int maxVisibleChars) {
 		if (text == null || text.isBlank()) {
 			return "";

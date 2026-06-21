@@ -2,11 +2,22 @@
 
 ## Released
 
+## 1.5.1
+
+### Added
+
+- Added Vendor Holo Display, an owner-protected holographic display for billboards, shop signs, and item previews.
+
+
 ## 1.4.1
 
 ### Added
 
 - Added Vendor Scrap, a new ingredient recovered as a rare bonus from iron, copper, and gold ores.
+
+### Fixed
+
+- Fixed several minor issues across existing Vendor blocks.
 
 ### Changed
 

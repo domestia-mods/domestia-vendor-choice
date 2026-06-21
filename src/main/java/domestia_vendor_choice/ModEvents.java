@@ -24,12 +24,14 @@ public class ModEvents {
 	private static final String ID_MESSAGE_SAFE_BREAK_DENIED = "message.domestia_vendor_choice.vendor_safe.break_denied";
 	private static final String ID_MESSAGE_HOPPER_BREAK_DENIED = "message.domestia_vendor_choice.vendor_hopper.break_denied";
 	private static final String ID_MESSAGE_NOTE_BREAK_DENIED = "message.domestia_vendor_choice.vendor_note.break_denied";
+	private static final String ID_MESSAGE_HOLO_DISPLAY_BREAK_DENIED = "message.domestia_vendor_choice.vendor_holo_display.break_denied";
 
 	// Feedback messages.
 	private static final Component MESSAGE_MACHINE_BREAK_DENIED = Component.translatable(ID_MESSAGE_MACHINE_BREAK_DENIED);
 	private static final Component MESSAGE_SAFE_BREAK_DENIED = Component.translatable(ID_MESSAGE_SAFE_BREAK_DENIED);
 	private static final Component MESSAGE_HOPPER_BREAK_DENIED = Component.translatable(ID_MESSAGE_HOPPER_BREAK_DENIED);
 	private static final Component MESSAGE_NOTE_BREAK_DENIED = Component.translatable(ID_MESSAGE_NOTE_BREAK_DENIED);
+	private static final Component MESSAGE_HOLO_DISPLAY_BREAK_DENIED = Component.translatable(ID_MESSAGE_HOLO_DISPLAY_BREAK_DENIED);
 
 	public static void initialize() {
 		PlayerBlockBreakEvents.BEFORE.register((level, player, pos, state, blockEntity) -> {
@@ -43,6 +45,10 @@ public class ModEvents {
 
 			if (state.is(ModBlocks.VENDOR_HOPPER)) {
 				return handleVendorHopperBreak(level, player, pos, blockEntity);
+			}
+
+			if (state.is(ModBlocks.VENDOR_HOLO_DISPLAY)) {
+				return handleVendorHoloDisplayBreak(level, player, pos, blockEntity);
 			}
 
 			if (state.is(ModBlocks.VENDOR_NOTE)) {
@@ -143,6 +149,21 @@ public class ModEvents {
 		return true;
 	}
 
+	private static boolean handleVendorHoloDisplayBreak(Level level, Player player, BlockPos pos, BlockEntity blockEntity) {
+		if (!(blockEntity instanceof VendorHoloDisplayBlockEntity vendorHoloDisplayBlockEntity)) {
+			return true;
+		}
+
+		if (!vendorHoloDisplayBlockEntity.canBreak(player)) {
+			player.sendSystemMessage(MESSAGE_HOLO_DISPLAY_BREAK_DENIED);
+			return false;
+		}
+
+		handlePrivateContainerBreak(level, player, pos, vendorHoloDisplayBlockEntity);
+
+		return true;
+	}
+
 	private static boolean handleVendorNoteBreak(Level level, Player player, BlockPos pos, BlockEntity blockEntity) {
 		if (!(blockEntity instanceof VendorNoteBlockEntity vendorNoteBlockEntity)) {
 			return true;
@@ -177,6 +198,11 @@ public class ModEvents {
 
 		if (container instanceof VendorHopperBlockEntity vendorHopperBlockEntity) {
 			handleVendorHopperContentsBreak(level, player, pos, vendorHopperBlockEntity);
+			return;
+		}
+
+		if (container instanceof VendorHoloDisplayBlockEntity vendorHoloDisplayBlockEntity) {
+			handleVendorHoloDisplayContentsBreak(level, player, pos, vendorHoloDisplayBlockEntity);
 		}
 	}
 
@@ -202,6 +228,14 @@ public class ModEvents {
 		}
 
 		vendorHopperBlockEntity.clearContent();
+	}
+
+	private static void handleVendorHoloDisplayContentsBreak(Level level, Player player, BlockPos pos, VendorHoloDisplayBlockEntity vendorHoloDisplayBlockEntity) {
+		if (vendorHoloDisplayBlockEntity.isOwner(player.getUUID())) {
+			dropContainerContents(level, pos, vendorHoloDisplayBlockEntity);
+		}
+
+		vendorHoloDisplayBlockEntity.clearContent();
 	}
 
 	private static void dropContainerContents(Level level, BlockPos pos, Container container) {

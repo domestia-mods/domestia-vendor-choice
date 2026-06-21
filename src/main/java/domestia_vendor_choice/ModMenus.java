@@ -25,6 +25,12 @@ public class ModMenus {
 			new MenuType<>(VendorSafeMenu::new, FeatureFlags.DEFAULT_FLAGS)
 	);
 
+	public static final MenuType<VendorHoloDisplayMenu> VENDOR_HOLO_DISPLAY_CONTROL = Registry.register(
+			BuiltInRegistries.MENU,
+			Identifier.fromNamespaceAndPath(DomestiaVendorChoice.MOD_ID, "vendor_holo_display_control"),
+			new MenuType<>(VendorHoloDisplayMenu::new, FeatureFlags.DEFAULT_FLAGS)
+	);
+
 	public static final MenuType<VendorHopperMenu> VENDOR_HOPPER = Registry.register(
 			BuiltInRegistries.MENU,
 			Identifier.fromNamespaceAndPath(DomestiaVendorChoice.MOD_ID, "vendor_hopper"),

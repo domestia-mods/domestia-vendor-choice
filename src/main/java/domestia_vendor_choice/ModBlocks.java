@@ -45,6 +45,17 @@ public class ModBlocks {
 			true
 	);
 
+	public static final Block VENDOR_HOLO_DISPLAY = register(
+			"vendor_holo_display",
+			VendorHoloDisplayBlock::new,
+			BlockBehaviour.Properties.of()
+					.strength(3.0f, 4.8f)
+					.sound(SoundType.METAL)
+					.lightLevel(state -> VendorHoloDisplayBlock.LIGHT_EMISSION)
+					.noOcclusion(),
+			new Item.Properties().stacksTo(1)
+	);
+
 	public static final Block VENDOR_NOTE = register(
 			"vendor_note",
 			VendorNoteBlock::new,
@@ -107,6 +118,7 @@ public class ModBlocks {
 			output.accept(VENDOR_MACHINE.asItem());
 			output.accept(VENDOR_SAFE.asItem());
 			output.accept(VENDOR_HOPPER.asItem());
+			output.accept(VENDOR_HOLO_DISPLAY.asItem());
 			output.accept(VENDOR_NOTE.asItem());
 		});
 

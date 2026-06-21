@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " L ",
+    " S ",
+    " S "
+  ],
+  "key": {
+    "L": "minecraft:soul_lantern",
+    "S": "domestia_vendor_choice:vendor_scrap"
+  },
+  "result": {
+    "id": "domestia_vendor_choice:vendor_holo_display",
+    "count": 1
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "ceiling=false,facing=north": {
+      "model": "domestia_vendor_choice:block/vendor_holo_display_floor"
+    },
+    "ceiling=false,facing=east": {
+      "model": "domestia_vendor_choice:block/vendor_holo_display_floor",
+      "y": 90
+    },
+    "ceiling=false,facing=south": {
+      "model": "domestia_vendor_choice:block/vendor_holo_display_floor",
+      "y": 180
+    },
+    "ceiling=false,facing=west": {
+      "model": "domestia_vendor_choice:block/vendor_holo_display_floor",
+      "y": 270
+    },
+    "ceiling=true,facing=north": {
+      "model": "domestia_vendor_choice:block/vendor_holo_display_ceiling"
+    },
+    "ceiling=true,facing=east": {
+      "model": "domestia_vendor_choice:block/vendor_holo_display_ceiling",
+      "y": 90
+    },
+    "ceiling=true,facing=south": {
+      "model": "domestia_vendor_choice:block/vendor_holo_display_ceiling",
+      "y": 180
+    },
+    "ceiling=true,facing=west": {
+      "model": "domestia_vendor_choice:block/vendor_holo_display_ceiling",
+      "y": 270
+    }
+  }
+}
