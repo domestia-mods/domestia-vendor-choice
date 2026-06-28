@@ -56,6 +56,16 @@ public class ModBlocks {
 			new Item.Properties().stacksTo(1)
 	);
 
+	public static final Block VENDOR_RECEIVER = register(
+			"vendor_receiver",
+			VendorReceiverBlock::new,
+			BlockBehaviour.Properties.of()
+					.strength(3.0f, 4.8f)
+					.sound(SoundType.METAL)
+					.noOcclusion(),
+			true
+	);
+
 	public static final Block VENDOR_NOTE = register(
 			"vendor_note",
 			VendorNoteBlock::new,
@@ -119,6 +129,7 @@ public class ModBlocks {
 			output.accept(VENDOR_SAFE.asItem());
 			output.accept(VENDOR_HOPPER.asItem());
 			output.accept(VENDOR_HOLO_DISPLAY.asItem());
+			output.accept(VENDOR_RECEIVER.asItem());
 			output.accept(VENDOR_NOTE.asItem());
 		});
 

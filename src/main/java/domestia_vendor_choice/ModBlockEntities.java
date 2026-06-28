@@ -31,6 +31,12 @@ public class ModBlockEntities {
 			FabricBlockEntityTypeBuilder.create(VendorHoloDisplayBlockEntity::new, ModBlocks.VENDOR_HOLO_DISPLAY).build()
 	);
 
+	public static final BlockEntityType<VendorReceiverBlockEntity> VENDOR_RECEIVER = Registry.register(
+			BuiltInRegistries.BLOCK_ENTITY_TYPE,
+			Identifier.fromNamespaceAndPath(DomestiaVendorChoice.MOD_ID, "vendor_receiver"),
+			FabricBlockEntityTypeBuilder.create(VendorReceiverBlockEntity::new, ModBlocks.VENDOR_RECEIVER).build()
+	);
+
 	public static final BlockEntityType<VendorNoteBlockEntity> VENDOR_NOTE = Registry.register(
 			BuiltInRegistries.BLOCK_ENTITY_TYPE,
 			Identifier.fromNamespaceAndPath(DomestiaVendorChoice.MOD_ID, "vendor_note"),

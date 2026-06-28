@@ -22,7 +22,7 @@
 
 **Domestia Vendor Choice** is a Fabric mod for Minecraft focused on player-to-player economy.
 
-It adds protected commercial infrastructure for multiplayer survival servers: vending machines, private storage, owner-aware item logistics, player-written Vendor notes, holographic shop displays, and Vendor Scrap-based survival progression.
+It adds protected commercial infrastructure for multiplayer survival servers: vending machines, private storage, owner-aware item logistics, public deposit receivers, player-written Vendor notes, holographic shop displays, and Vendor Scrap-based survival progression.
 
 The mod is designed for players who want to build shops, manage stock, collect payments, and automate trading systems while preserving ownership and controlled access.
 
@@ -32,6 +32,7 @@ The mod is designed for players who want to build shops, manage stock, collect p
 - Player-operated vending machines.
 - Protected commercial storage.
 - Private logistics for shop infrastructure.
+- Public one-item deposits into compatible containers and Vendor blocks.
 - Protected player-written Vendor notes for shop labels, notices, and public information.
 - Configurable holographic displays for shop signs, item previews, and public information.
 - Purchase-triggered redstone transaction pulse.
@@ -46,8 +47,9 @@ Domestia Vendor Choice currently includes:
 - **Vendor Machine** — a player-owned vending machine for direct item exchange.
 - **Vendor Safe** — protected private storage for shop supplies, revenue, and logistics.
 - **Vendor Hopper** — owner-aware item logistics for Vendor infrastructure and intentional container connections.
+- **Vendor Receiver** — an owner-protected public deposit block for one-item transfers into compatible blocks below.
 - **Vendor Note** — an owner-protected note display for public read-only shop information and player-written notices.
-* **Vendor Holo Display** — an owner-protected holographic display for billboards, shop signs, and item previews.
+- **Vendor Holo Display** — an owner-protected holographic display for billboards, shop signs, and item previews.
 
 Detailed behavior, layouts, recipes, and access rules are documented in the project wiki.
 

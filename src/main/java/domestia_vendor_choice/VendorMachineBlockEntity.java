@@ -24,7 +24,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.UUID;
 
-public class VendorMachineBlockEntity extends BlockEntity implements Container, WorldlyContainer {
+public class VendorMachineBlockEntity extends BlockEntity implements Container, WorldlyContainer, VendorPublicDepositTarget {
 	// Persistent NBT keys.
 	private static final String KEY_OWNER_UUID = "OwnerUuid";
 	private static final String KEY_OWNER_NAME = "OwnerName";
@@ -393,7 +393,7 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 
 	private boolean transferOneSecureLogisticsCycle() {
 		boolean importedStock = this.importOneStockItemFromOwnerSafeAbove();
-		boolean exportedVault = this.exportOneVaultItemToOwnerSafeBelow();
+		boolean exportedVault = this.exportOneVaultItemToOwnerTargetBelow();
 
 		return importedStock || exportedVault;
 	}
@@ -481,13 +481,24 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 		stockStack.grow(insertedStack.getCount());
 	}
 
-	private boolean exportOneVaultItemToOwnerSafeBelow() {
-		VendorSafeBlockEntity targetSafe = this.getOwnerSafeAt(this.worldPosition.below());
+	private boolean exportOneVaultItemToOwnerTargetBelow() {
+		BlockPos targetPos = this.worldPosition.below();
+		VendorSafeBlockEntity targetSafe = this.getOwnerSafeAt(targetPos);
 
-		if (targetSafe == null) {
-			return false;
+		if (targetSafe != null) {
+			return this.exportOneVaultItemToOwnerSafe(targetSafe);
 		}
 
+		VendorMachineBlockEntity targetMachine = this.getOwnerMachineAt(targetPos);
+
+		if (targetMachine != null) {
+			return this.exportOneVaultItemToOwnerMachineStock(targetMachine);
+		}
+
+		return false;
+	}
+
+	private boolean exportOneVaultItemToOwnerSafe(VendorSafeBlockEntity targetSafe) {
 		for (int index = 0; index < VAULT_SLOT_COUNT; index++) {
 			int vaultSlot = VAULT_SLOT_START + index;
 			ItemStack vaultStack = this.items.get(vaultSlot);
@@ -505,16 +516,44 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 				continue;
 			}
 
-			vaultStack.shrink(COUNT_SECURE_TRANSFER_ITEMS_PER_CYCLE);
-
-			if (vaultStack.isEmpty()) {
-				this.items.set(vaultSlot, ItemStack.EMPTY);
-			}
-
+			this.shrinkVaultSlot(vaultSlot, vaultStack, COUNT_SECURE_TRANSFER_ITEMS_PER_CYCLE);
 			return true;
 		}
 
 		return false;
+	}
+
+	private boolean exportOneVaultItemToOwnerMachineStock(VendorMachineBlockEntity targetMachine) {
+		for (int index = 0; index < VAULT_SLOT_COUNT; index++) {
+			int vaultSlot = VAULT_SLOT_START + index;
+			ItemStack vaultStack = this.items.get(vaultSlot);
+
+			if (vaultStack.isEmpty()) {
+				continue;
+			}
+
+			ItemStack transferStack = vaultStack.copy();
+			transferStack.setCount(COUNT_SECURE_TRANSFER_ITEMS_PER_CYCLE);
+
+			ItemStack remainingStack = targetMachine.insertStockForSecureTransfer(transferStack);
+
+			if (!remainingStack.isEmpty()) {
+				continue;
+			}
+
+			this.shrinkVaultSlot(vaultSlot, vaultStack, COUNT_SECURE_TRANSFER_ITEMS_PER_CYCLE);
+			return true;
+		}
+
+		return false;
+	}
+
+	private void shrinkVaultSlot(int vaultSlot, ItemStack vaultStack, int count) {
+		vaultStack.shrink(count);
+
+		if (vaultStack.isEmpty()) {
+			this.items.set(vaultSlot, ItemStack.EMPTY);
+		}
 	}
 
 	private VendorSafeBlockEntity getOwnerSafeAt(BlockPos pos) {
@@ -533,6 +572,24 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 		}
 
 		return vendorSafeBlockEntity;
+	}
+
+	private VendorMachineBlockEntity getOwnerMachineAt(BlockPos pos) {
+		if (this.level == null || this.ownerUuid == null) {
+			return null;
+		}
+
+		BlockEntity blockEntity = this.level.getBlockEntity(pos);
+
+		if (!(blockEntity instanceof VendorMachineBlockEntity vendorMachineBlockEntity)) {
+			return null;
+		}
+
+		if (!vendorMachineBlockEntity.isOwner(this.ownerUuid)) {
+			return null;
+		}
+
+		return vendorMachineBlockEntity;
 	}
 
 
@@ -618,6 +675,11 @@ public class VendorMachineBlockEntity extends BlockEntity implements Container, 
 			this.items.set(stockSlot, insertedStack);
 			remainingStack.shrink(insertedStack.getCount());
 		}
+	}
+
+	@Override
+	public ItemStack insertForPublicDeposit(ItemStack sourceStack, Player sender) {
+		return this.insertStockForSecureTransfer(sourceStack);
 	}
 
 	// Secure output for owner-matched Vendor Hopper.

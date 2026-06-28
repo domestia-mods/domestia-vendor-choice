@@ -24,18 +24,13 @@ public class VendorNoteBlockEntityRenderer implements BlockEntityRenderer<Vendor
 	private static final float FLOOR_PANEL_SURFACE_Z = 0.46915F;
 	private static final float WALL_PANEL_SURFACE_Z = 15.0F / 16.0F;
 
-	private static final float OWNER_TEXT_SCALE = 0.0055F;
 	private static final float TITLE_TEXT_SCALE = 0.0070F;
 
-	private static final float FLOOR_OWNER_LINE_Y = -0.195F;
-	private static final float FLOOR_TITLE_LINE_Y = -0.135F;
-	private static final float WALL_OWNER_LINE_Y = -0.260F;
-	private static final float WALL_TITLE_LINE_Y = -0.200F;
+	private static final float FLOOR_TITLE_LINE_Y = -0.165F;
+	private static final float WALL_TITLE_LINE_Y = -0.230F;
 
-	private static final int OWNER_MAX_VISIBLE_CHARS = 24;
 	private static final int TITLE_MAX_VISIBLE_CHARS = 14;
 
-	private static final int COLOR_OWNER = 0xFFCCFF66;
 	private static final int COLOR_TITLE = 0xFF99FF00;
 	private static final int BACKGROUND_COLOR_NONE = 0;
 	private static final int OUTLINE_COLOR_NONE = 0;
@@ -63,7 +58,6 @@ public class VendorNoteBlockEntityRenderer implements BlockEntityRenderer<Vendor
 
 		renderState.setFacing(blockEntity.getBlockState().getValue(VendorNoteBlock.FACING));
 		renderState.setWall(blockEntity.getBlockState().getValue(VendorNoteBlock.WALL));
-		renderState.setOwnerName(blockEntity.getOwnerName());
 		renderState.setTitle(blockEntity.getTitleText());
 	}
 
@@ -74,23 +68,17 @@ public class VendorNoteBlockEntityRenderer implements BlockEntityRenderer<Vendor
 			SubmitNodeCollector collector,
 			CameraRenderState cameraState
 	) {
-		String ownerText = LocalizedRenderText.trim(
-				LocalizedRenderText.resolve(renderState.getOwnerName(), VendorNoteBlockEntity.DEFAULT_OWNER_NAME_KEY),
-				OWNER_MAX_VISIBLE_CHARS
-		);
 		String titleText = LocalizedRenderText.trim(renderState.getTitle(), TITLE_MAX_VISIBLE_CHARS);
 
-		if (ownerText.isBlank() && titleText.isBlank()) {
+		if (titleText.isBlank()) {
 			return;
 		}
 
 		boolean wall = renderState.isWall();
-		float ownerLineY = wall ? WALL_OWNER_LINE_Y : FLOOR_OWNER_LINE_Y;
 		float titleLineY = wall ? WALL_TITLE_LINE_Y : FLOOR_TITLE_LINE_Y;
 
 		poseStack.pushPose();
 		this.applyPanelTransform(poseStack, renderState.getFacing(), wall);
-		this.submitTextLine(poseStack, collector, renderState, ownerText, ownerLineY, OWNER_TEXT_SCALE, COLOR_OWNER);
 		this.submitTextLine(poseStack, collector, renderState, titleText, titleLineY, TITLE_TEXT_SCALE, COLOR_TITLE);
 		poseStack.popPose();
 	}

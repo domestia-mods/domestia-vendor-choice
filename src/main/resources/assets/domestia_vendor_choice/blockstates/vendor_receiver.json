@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "domestia_vendor_choice:block/vendor_receiver"
+    }
+  }
+}

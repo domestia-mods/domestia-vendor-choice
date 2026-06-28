@@ -3,6 +3,7 @@
   "values": [
     "domestia_vendor_choice:vendor_machine",
     "domestia_vendor_choice:vendor_hopper",
-    "domestia_vendor_choice:vendor_holo_display"
+    "domestia_vendor_choice:vendor_holo_display",
+    "domestia_vendor_choice:vendor_receiver"
   ]
 }

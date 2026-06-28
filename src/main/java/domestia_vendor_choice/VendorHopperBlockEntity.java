@@ -27,7 +27,7 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.UUID;
 
-public class VendorHopperBlockEntity extends BlockEntity implements Container, WorldlyContainer {
+public class VendorHopperBlockEntity extends BlockEntity implements Container, WorldlyContainer, VendorPublicDepositTarget {
 	// Persistent NBT keys.
 	private static final String KEY_OWNER_UUID = "OwnerUuid";
 	private static final String KEY_OWNER_NAME = "OwnerName";
@@ -429,7 +429,7 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 			return false;
 		}
 
-		ItemStack remainingStack = this.insertIntoInternalInventory(itemStack);
+		ItemStack remainingStack = this.insertIntoExplicitTemplateBuffers(itemStack);
 
 		if (remainingStack.getCount() == itemStack.getCount()) {
 			return false;
@@ -670,11 +670,20 @@ public class VendorHopperBlockEntity extends BlockEntity implements Container, W
 		return this.insertIntoInternalInventory(sourceStack);
 	}
 
+	@Override
+	public ItemStack insertForPublicDeposit(ItemStack sourceStack, Player sender) {
+		return this.insertIntoExplicitTemplateBuffers(sourceStack);
+	}
+
 	private ItemStack insertForDownwardTemplateDiversion(ItemStack sourceStack) {
+		return this.insertIntoExplicitTemplateBuffers(sourceStack);
+	}
+
+	private ItemStack insertIntoExplicitTemplateBuffers(ItemStack sourceStack) {
 		ItemStack remainingStack = sourceStack.copy();
 
-		// Downward sorting diversion accepts only explicit Template matches.
-		// Empty Template lanes are intentionally ignored here, unlike general hopper input.
+		// Public/world input accepts only explicit Template matches.
+		// Empty Template lanes are intentionally ignored here, unlike general protected logistics input.
 		this.insertIntoMatchingTemplateBuffers(remainingStack);
 
 		if (remainingStack.getCount() != sourceStack.getCount()) {

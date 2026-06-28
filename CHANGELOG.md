@@ -2,6 +2,22 @@
 
 ## Released
 
+## 1.6.1
+
+### Added
+
+- Added Vendor Receiver, an owner-protected public deposit block for one-item transfers into compatible containers and Vendor blocks below.
+
+### Changed
+
+- Vendor Hopper dropped-item pickup now accepts only items that explicitly match its Template slots.
+
+### Fixed
+
+- Fixed protected Vendor block break attempts by non-owners causing client-side owner/title text resets.
+- Fixed Vendor Note top-panel rendering by removing the redundant owner line and leaving the title only.
+- Fixed Vendor Machine Vault transfer into the Stock of an owner-matched Vendor Machine below.
+
 ## 1.5.1
 
 ### Added

@@ -23,7 +23,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import java.util.UUID;
 
-public class VendorSafeBlockEntity extends BlockEntity implements Container, WorldlyContainer {
+public class VendorSafeBlockEntity extends BlockEntity implements Container, WorldlyContainer, VendorPublicDepositTarget {
 	// Persistent NBT keys.
 	private static final String KEY_OWNER_UUID = "OwnerUuid";
 	private static final String KEY_OWNER_NAME = "OwnerName";
@@ -282,6 +282,11 @@ public class VendorSafeBlockEntity extends BlockEntity implements Container, Wor
 			this.items.set(slot, insertedStack);
 			remainingStack.shrink(insertedStack.getCount());
 		}
+	}
+
+	@Override
+	public ItemStack insertForPublicDeposit(ItemStack sourceStack, Player sender) {
+		return this.insertForSecureTransfer(sourceStack);
 	}
 
 	// Secure transfer output. Only our owner-matched Vendor Machine code should call this.
